@@ -1,0 +1,6462 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Terminbuch</title>
+<meta name="mr-version" content="TERMINBUCH-FERIEN-FINAL-2026-07-07">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=6">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Terminbuch">
+
+<style>*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+font-family:"MontserratLocal";
+background:#000;
+color:white;
+margin:0;
+overflow:hidden;
+}
+
+.top{
+display:none;
+position:fixed;
+top:0;
+left:0;
+right:0;
+background:#000;
+padding:15px;
+z-index:1000;
+}
+
+.content{
+display:none;
+position:absolute;
+top:205px;
+bottom:95px;
+left:0;
+right:0;
+overflow-y:auto;
+padding:15px;
+}
+
+.bottom{
+display:none;
+position:fixed;
+bottom:10px;
+left:0;
+right:0;
+background:#000;
+padding:15px;
+z-index:1000;
+}
+
+.header{
+position:relative;
+height:50px;
+margin-bottom:10px;
+}
+
+.title{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+font-size:22px;
+font-weight:bold;
+}
+
+.logo{
+position:absolute;
+right:0;
+top:50%;
+transform:translateY(-50%);
+width:45px;
+height:auto;
+}
+
+.monthBar{
+display:grid;
+grid-template-columns:44px 1fr 44px;
+gap:8px;
+align-items:center;
+margin-top:10px;
+}
+
+.monthTitle{
+background:#1c1c1f;
+height:44px;
+border-radius:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:17px;
+font-weight:bold;
+}
+
+.navBtn{
+height:44px;
+border-radius:14px;
+border:none;
+background:#1c1c1f;
+color:white;
+font-size:24px;
+padding:0;
+}
+
+.weekdays{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:6px;
+margin-bottom:8px;
+color:#aaa;
+font-size:12px;
+text-align:center;
+}
+
+.calendar{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:6px;
+}
+
+.day{
+background:#1c1c1f;
+border-radius:14px;
+min-height:68px;
+padding:7px 5px;
+position:relative;
+border:2px solid transparent;
+}
+
+.day.other{
+opacity:.25;
+}
+
+.day.selected{
+border:2px solid #C8CF04;
+}
+
+.day.today .num{
+background:#d5dd00;
+color:#000;
+}
+
+.num{
+width:24px;
+height:24px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:14px;
+font-weight:bold;
+margin-bottom:4px;
+}
+
+.dots{
+display:flex;
+gap:3px;
+flex-wrap:wrap;
+}
+
+.dot{
+width:6px;
+height:6px;
+border-radius:50%;
+background:#d5dd00;
+}
+
+.count{
+position:absolute;
+right:6px;
+bottom:5px;
+font-size:11px;
+color:#aaa;
+}
+
+.detailBox{
+background:#111;
+border-radius:18px;
+padding:12px;
+margin-top:14px;
+}
+
+.detailHeader{
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:bold;
+margin-bottom:10px;
+font-size:17px;
+}
+
+.termin{
+background:#1c1c1f;
+border-left:5px solid #d5dd00;
+border-radius:12px;
+padding:10px;
+font-size:14px;
+line-height:1.35;
+margin-bottom:8px;
+}
+
+.terminName{
+font-size:16px;
+font-weight:bold;
+}
+
+.empty{
+color:#777;
+font-size:15px;
+padding:8px 0;
+}
+
+button{
+width:100%;
+padding:14px;
+border-radius:14px;
+border:none;
+background:#007aff;
+color:white;
+font-size:17px;
+}
+
+button.success{
+background:#34c759;
+}
+
+/* TERMINART MR BEAUTY / PRIVAT */
+.typeRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.typeBtn{height:46px;border-radius:12px;background:#1c1c1f;color:#fff;display:flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:500;border:2px solid transparent;user-select:none;-webkit-user-select:none;}
+.typeIcon{font-size:18px;line-height:1;}
+.typeBtn.beauty .typeIcon,.typeBtn.beauty.active{color:#d5dd00;}
+.typeBtn.beauty.active{border-color:#d5dd00;}
+.typeBtn.private .typeIcon,.typeBtn.private.active{color:#ff3b30;}
+.typeBtn.private.active{border-color:#ff3b30;}
+.privateNoteWrap{padding:0;}
+.noteField{width:100%;height:245px;resize:none;border:none;outline:none;border-radius:14px;background:#1c1c1f;color:white;font-size:16px;font-family:"MontserratLocal";padding:14px;line-height:1.35;}
+.noteField::placeholder{color:#8e8e93;}
+.dot.private{background:#ff3b30;}
+.termin.private{border-left-color:#ff3b30;}
+.termin.private .terminName,.terminStatus.private{color:#ff3b30;}
+
+/* FORMULAR */
+.form{
+display:none;
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#000;
+z-index:3000;
+overflow:hidden;
+}
+
+.formTop{
+position:fixed;
+top:0;
+left:0;
+right:0;
+background:#000;
+padding:15px;
+z-index:3100;
+}
+
+.formHeader{
+position:relative;
+height:50px;
+margin-bottom:10px;
+}
+
+.closeBtn{
+position:absolute;
+left:0;
+top:50%;
+transform:translateY(-50%);
+width:44px;
+height:44px;
+border-radius:50%;
+background:#1c1c1f;
+font-size:24px;
+padding:0;
+}
+
+.formTitle{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+font-size:22px;
+font-weight:bold;
+white-space:nowrap;
+}
+
+.nameRow{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:10px;
+}
+
+.field{
+width:100%;
+height:46px;
+padding:12px;
+border-radius:12px;
+border:none;
+background:#1c1c1f;
+color:white;
+font-size:17px;
+font-family:"MontserratLocal";
+}
+
+.fakeDate{
+width:100%;
+height:46px;
+border-radius:12px;
+background:#1c1c1f;
+color:white;
+font-size:17px;
+display:flex;
+align-items:center;
+padding:12px;
+position:relative;
+overflow:hidden;
+}
+
+.timeWrap{
+position:relative;
+width:100%;
+height:46px;
+border-radius:12px;
+background:#1c1c1f;
+overflow:hidden;
+}
+
+.timeText{
+position:absolute;
+left:12px;
+right:12px;
+top:0;
+bottom:0;
+display:flex;
+align-items:center;
+justify-content:flex-start;
+font-size:17px;
+color:white;
+z-index:2;
+pointer-events:none;
+}
+
+.timeText.empty{
+color:#9a9a9f;
+}
+
+.timeInput{
+position:absolute;
+inset:0;
+width:100%;
+height:46px;
+border:none;
+background:transparent;
+color:transparent;
+font-size:17px;
+font-family:"MontserratLocal";
+padding:12px;
+opacity:0.01;
+z-index:3;
+}
+
+.timeInput::-webkit-calendar-picker-indicator{
+filter:invert(1);
+opacity:.9;
+}
+
+.formContent{
+position:absolute;
+top:245px;
+bottom:170px;
+left:0;
+right:0;
+overflow-y:auto;
+padding:15px 15px 8px 15px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+align-items:stretch;
+}
+
+.btn{
+background:#1c1c1f;
+height:72px;
+padding:10px;
+border-radius:14px;
+text-align:center;
+white-space:pre-line;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:14px;
+line-height:1.2;
+user-select:none;
+-webkit-user-select:none;
+}
+
+.btn.active{
+background:#007aff;
+}
+
+.btn.error{
+border:2px solid #ff3b30;
+}
+
+.formBottom{
+position:fixed;
+bottom:10px;
+left:0;
+right:0;
+background:#000;
+padding:15px;
+z-index:3100;
+}
+
+.preview{
+background:#1c1c1f;
+color:#ddd;
+padding:12px;
+border-radius:14px;
+font-size:14px;
+line-height:1.35;
+margin-bottom:10px;
+height:68px;
+overflow-y:auto;
+}
+
+.preview b{
+display:block;
+font-size:15px;
+margin-bottom:2px;
+}
+
+.clearBtn{
+background:#333;
+margin-top:8px;
+}
+
+.error{
+border:2px solid #ff3b30 !important;
+}
+
+.alertOverlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.62);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;
+padding:20px;
+}
+
+.alertBox{
+background:#1c1c1f;
+border-radius:22px;
+padding:18px;
+width:100%;
+max-width:340px;
+box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+.alertTitle{
+font-size:19px;
+font-weight:bold;
+margin-bottom:8px;
+color:white;
+}
+
+.alertText{
+font-size:16px;
+line-height:1.4;
+margin-bottom:16px;
+color:#ddd;
+white-space:pre-line;
+}
+
+.alertBtn{
+background:#007aff;
+color:white;
+border:none;
+border-radius:14px;
+padding:13px;
+font-size:17px;
+width:100%;
+}
+
+.actionOverlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.62);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9998;
+padding:20px;
+}
+
+.actionBox{
+background:#1c1c1f;
+border-radius:22px;
+padding:18px;
+width:100%;
+max-width:340px;
+box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+.actionTitle{
+font-size:19px;
+font-weight:bold;
+margin-bottom:6px;
+color:white;
+}
+
+.actionSub{
+font-size:14px;
+line-height:1.35;
+margin-bottom:16px;
+color:#aaa;
+white-space:pre-line;
+}
+
+.actionBtn{
+width:100%;
+border:none;
+border-radius:14px;
+padding:13px;
+font-size:17px;
+margin-top:8px;
+background:#007aff;
+color:white;
+}
+
+.actionDanger{
+background:#ff3b30;
+}
+
+.actionCancel{
+background:#333;
+}
+
+/* BACKUP */
+.backupBox{
+background:#111;
+border-radius:18px;
+padding:12px;
+margin-top:14px;
+}
+
+.backupTitle{
+font-size:17px;
+font-weight:bold;
+margin-bottom:6px;
+}
+
+.backupSub{
+font-size:13px;
+line-height:1.35;
+color:#aaa;
+margin-bottom:10px;
+}
+
+.backupRow{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.backupBtn{
+background:#1c1c1f;
+color:white;
+font-size:15px;
+padding:13px;
+border-radius:14px;
+}
+
+.backupBtn.gold{
+background:#d5dd00;
+color:#000;
+font-weight:bold;
+}
+
+.importInput{
+display:none;
+}
+
+/* PIN SCHUTZ */
+.pinLock{
+position:fixed;
+inset:0;
+background:#000;
+z-index:20000;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:22px;
+}
+.pinBox{
+width:100%;
+max-width:360px;
+background:#111;
+border-radius:26px;
+padding:22px;
+box-shadow:0 20px 70px rgba(0,0,0,.8);
+}
+.pinLogo{
+width:72px;
+height:auto;
+display:block;
+margin:0 auto 16px auto;
+}
+.pinTitle{
+text-align:center;
+font-size:24px;
+font-weight:bold;
+margin-bottom:8px;
+}
+.pinSub{
+text-align:center;
+font-size:14px;
+color:#aaa;
+line-height:1.35;
+margin-bottom:18px;
+}
+.pinInput{
+width:100%;
+height:54px;
+border:none;
+border-radius:16px;
+background:#1c1c1f;
+color:white;
+font-size:26px;
+text-align:center;
+letter-spacing:10px;
+font-family:"MontserratLocal";
+margin-bottom:12px;
+}
+.pinButton{
+background:#d5dd00;
+color:#000;
+font-weight:bold;
+}
+.pinError{
+display:none;
+background:#2b0808;
+color:#ff6b6b;
+border-radius:14px;
+padding:10px;
+font-size:14px;
+text-align:center;
+margin-top:10px;
+}
+
+/* STATISTIK OBEN */
+.statsGrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin:8px 0 10px 0;
+}
+
+.statCard{
+height:74px;
+background:linear-gradient(145deg,#171719,#242426);
+border-radius:18px;
+padding:9px 12px;
+box-shadow:0 8px 25px rgba(0,0,0,.35);
+overflow:hidden;
+display:grid;
+grid-template-columns:24px 1fr;
+grid-template-rows:auto auto auto;
+column-gap:7px;
+align-content:center;
+}
+
+.statHead{
+grid-column:1 / 3;
+display:grid;
+grid-template-columns:24px 1fr;
+align-items:center;
+column-gap:7px;
+margin-bottom:5px;
+}
+
+.statDot{
+width:16px;
+height:16px;
+border-radius:50%;
+display:inline-block;
+align-self:center;
+justify-self:center;
+}
+
+.yellowDot{
+background:#d5dd00;
+box-shadow:0 0 14px rgba(213,221,0,.35);
+}
+
+.greenDot{
+background:#34c759;
+box-shadow:0 0 14px rgba(52,199,89,.35);
+}
+
+.statTitle{
+font-size:12.5px;
+font-weight:800;
+line-height:1.05;
+color:#fff;
+white-space:nowrap;
+letter-spacing:-.25px;
+}
+
+.statLine{
+grid-column:2 / 3;
+display:grid;
+grid-template-columns:minmax(0,1fr) 24px;
+align-items:center;
+font-size:11.5px;
+line-height:1.26;
+color:#f1f1f1;
+letter-spacing:-.35px;
+white-space:nowrap;
+}
+
+.statValue{
+font-weight:800;
+text-align:right;
+font-size:12.5px;
+}
+
+.statYellow{ color:#d5dd00; }
+.statGreen{ color:#34c759; }
+
+.statNumber{
+font-size:30px;
+font-weight:800;
+line-height:1;
+color:#fff;
+}
+.dot.done{
+background:#34c759;
+}
+
+.dot.open{
+background:#d5dd00;
+}
+
+.termin.done{
+border-left-color:#34c759;
+}
+
+.termin.open{
+border-left-color:#d5dd00;
+}
+
+.terminStatus{
+font-size:13px;
+font-weight:600;
+margin-top:2px;
+}
+
+.terminStatus.done{
+color:#34c759;
+}
+
+.terminStatus.open{
+color:#d5dd00;
+}
+
+/* EIGENER DATUM-KALENDER */
+.customDateOverlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.62);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:5000;
+padding:20px;
+}
+
+.customDateBox{
+width:100%;
+max-width:340px;
+background:#1f1f22;
+border-radius:26px;
+padding:18px;
+box-shadow:0 25px 80px rgba(0,0,0,.75);
+}
+
+.customDateHeader{
+display:grid;
+grid-template-columns:44px 1fr 44px;
+gap:8px;
+align-items:center;
+margin-bottom:14px;
+}
+
+.customDateTitle{
+font-size:20px;
+font-weight:bold;
+text-align:center;
+}
+
+.customDateNav{
+height:42px;
+border-radius:14px;
+background:#2c2c2e;
+color:#0a84ff;
+font-size:34px;
+padding:0;
+}
+
+.customWeekdays{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:4px;
+color:#aaa;
+font-size:12px;
+font-weight:600;
+text-align:center;
+margin-bottom:8px;
+}
+
+.customDateGrid{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:4px;
+}
+
+.customDateCell{
+height:44px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:18px;
+font-weight:500;
+color:#fff;
+background:transparent;
+}
+
+.customDateCell.other{
+opacity:.28;
+}
+
+.customDateCell.selected{
+background:#C8CF04;
+color:#000;
+}
+
+.customDateCell.today{
+box-shadow:inset 0 0 0 2px #d5dd00;
+}
+
+.customDateActions{
+display:grid;
+grid-template-columns:1fr 64px;
+gap:12px;
+margin-top:18px;
+align-items:center;
+}
+
+.customCancel{
+background:#2c2c2e;
+color:white;
+border-radius:18px;
+height:54px;
+font-size:18px;
+}
+
+.customOk{
+background:#0a84ff;
+color:white;
+border-radius:50%;
+height:58px;
+width:58px;
+font-size:34px;
+padding:0;
+justify-self:end;
+}
+
+.fakeDate,
+.fakeDate span,
+#datumAnzeige{
+-webkit-user-select:none !important;
+user-select:none !important;
+-webkit-touch-callout:none !important;
+cursor:pointer;
+}
+
+.datumClickLayer{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+opacity:0;
+background:transparent;
+border:0;
+padding:0;
+margin:0;
+z-index:5;
+}
+#datumAnzeige{
+position:relative;
+z-index:1;
+pointer-events:auto;
+}
+.fakeDate{
+position:relative;
+}
+
+.fakeDate{
+border:none !important;
+text-align:left !important;
+justify-content:flex-start !important;
+font-family:"MontserratLocal" !important;
+-webkit-appearance:none !important;
+appearance:none !important;
+touch-action:manipulation !important;
+}
+
+.fakeDate span,
+#datumAnzeige{
+pointer-events:auto !important;
+-webkit-user-select:none !important;
+user-select:none !important;
+-webkit-touch-callout:none !important;
+}
+
+.datumClickLayer{
+display:none !important;
+}
+
+#datumAnzeige.fakeDate{
+display:block !important;
+width:100% !important;
+height:46px !important;
+border-radius:12px !important;
+background:#1c1c1f !important;
+color:white !important;
+font-size:17px !important;
+font-family:"MontserratLocal" !important;
+padding:12px !important;
+border:none !important;
+-webkit-user-select:none !important;
+user-select:none !important;
+-webkit-touch-callout:none !important;
+cursor:pointer !important;
+}
+#datumAnzeige.fakeDate:focus{
+outline:none !important;
+}
+
+.dateButton{
+position:relative !important;
+display:flex !important;
+align-items:center !important;
+width:100% !important;
+height:46px !important;
+padding:12px !important;
+border-radius:12px !important;
+background:#1c1c1f !important;
+color:white !important;
+font-size:17px !important;
+font-family:"MontserratLocal" !important;
+overflow:hidden !important;
+}
+
+#datumAnzeige{
+position:relative !important;
+z-index:1 !important;
+pointer-events:none !important;
+-webkit-user-select:none !important;
+user-select:none !important;
+}
+
+.datumTapButton{
+position:absolute !important;
+inset:0 !important;
+width:100% !important;
+height:100% !important;
+opacity:0 !important;
+background:transparent !important;
+border:0 !important;
+padding:0 !important;
+margin:0 !important;
+z-index:9999 !important;
+pointer-events:auto !important;
+}
+
+/* FINAL DATUM TAP FIX */
+#datumBox.dateButton{
+position:relative !important;
+display:flex !important;
+align-items:center !important;
+width:100% !important;
+height:46px !important;
+padding:12px !important;
+border-radius:12px !important;
+background:#1c1c1f !important;
+color:white !important;
+font-size:17px !important;
+font-family:"MontserratLocal" !important;
+border:none !important;
+z-index:50 !important;
+pointer-events:auto !important;
+touch-action:manipulation !important;
+-webkit-user-select:none !important;
+user-select:none !important;
+-webkit-touch-callout:none !important;
+}
+
+#datumBox.dateButton span{
+pointer-events:none !important;
+}
+
+/* FINAL DATE PICKER FIX */
+#datumBox.dateButton{
+position:relative !important;
+display:flex !important;
+align-items:center !important;
+width:100% !important;
+height:46px !important;
+padding:12px !important;
+border-radius:12px !important;
+background:#1c1c1f !important;
+color:white !important;
+font-size:17px !important;
+font-family:"MontserratLocal" !important;
+border:none !important;
+z-index:999 !important;
+pointer-events:auto !important;
+touch-action:manipulation !important;
+-webkit-user-select:none !important;
+user-select:none !important;
+-webkit-touch-callout:none !important;
+}
+#customDateOverlay{
+z-index:99999 !important;
+}
+
+/* Statistik-Titel kleiner, damit September/Oktober/November/Dezember komplett sichtbar sind */
+.statLabel,
+#doneLabel{
+font-size:10.5px !important;
+line-height:1.05 !important;
+letter-spacing:-0.55px !important;
+white-space:nowrap !important;
+overflow:visible !important;
+text-overflow:clip !important;
+}
+
+.statCard{
+padding-left:12px !important;
+padding-right:10px !important;
+}
+
+/* FINAL FIX: Datumszahlen 1–31 wirklich horizontal mittig */
+.day{
+display:flex !important;
+flex-direction:column !important;
+align-items:center !important;
+}
+
+.day .num{
+position:relative !important;
+left:auto !important;
+right:auto !important;
+top:auto !important;
+transform:none !important;
+width:24px !important;
+height:24px !important;
+display:flex !important;
+align-items:center !important;
+justify-content:center !important;
+text-align:center !important;
+margin:0 auto 4px auto !important;
+padding:0 !important;
+box-sizing:border-box !important;
+}
+
+.day .dots{
+width:100% !important;
+display:flex !important;
+justify-content:center !important;
+align-items:center !important;
+}
+
+/* FINAL PIN LOCK: ohne Öffnen-Button, fixe eigene Zahlentastatur */
+.pinLock{
+align-items:flex-start !important;
+justify-content:center !important;
+padding:0 22px !important;
+overflow:hidden !important;
+}
+
+.pinBox{
+margin-top:345px !important;
+width:100% !important;
+max-width:360px !important;
+padding:22px !important;
+border-radius:26px !important;
+}
+
+.pinLogo{
+width:72px !important;
+margin-bottom:16px !important;
+}
+
+.pinTitle{
+font-size:24px !important;
+line-height:1.12 !important;
+margin-bottom:8px !important;
+}
+
+.pinSub{
+font-size:14px !important;
+line-height:1.35 !important;
+margin-bottom:18px !important;
+}
+
+.pinInput{
+height:54px !important;
+margin-bottom:0 !important;
+font-size:26px !important;
+letter-spacing:10px !important;
+}
+
+.pinButton{
+display:none !important;
+}
+
+.pinKeypad{
+position:fixed !important;
+left:0 !important;
+right:0 !important;
+bottom:34px !important;
+display:grid !important;
+grid-template-columns:repeat(3, 1fr) !important;
+gap:8px 8px !important;
+padding:0 12px !important;
+z-index:20001 !important;
+}
+
+.pinKeypad button{
+height:72px !important;
+border-radius:7px !important;
+border:none !important;
+background:linear-gradient(180deg,#686868,#3e3e3e) !important;
+color:white !important;
+font-family:"MontserratLocal" !important;
+font-weight:300 !important;
+font-size:35px !important;
+line-height:1 !important;
+padding:0 !important;
+display:flex !important;
+flex-direction:column !important;
+align-items:center !important;
+justify-content:center !important;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.pinKeypad button span{
+line-height:1 !important;
+}
+
+.pinKeypad button small{
+font-size:11px !important;
+font-weight:800 !important;
+letter-spacing:4px !important;
+margin-top:7px !important;
+line-height:1 !important;
+}
+
+.pinKeypad .pinBack{
+background:transparent !important;
+box-shadow:none !important;
+font-size:36px !important;
+font-weight:300 !important;
+}
+
+@media (max-height: 820px){
+.pinBox{ margin-top:330px !important; }
+.pinKeypad{ bottom:30px !important; }
+.pinKeypad button{ height:68px !important; font-size:33px !important; }
+.pinKeypad button small{ font-size:10.5px !important; }
+}
+
+@media (max-height: 760px){
+.pinBox{ margin-top:285px !important; }
+.pinKeypad button{ height:62px !important; font-size:31px !important; }
+.pinKeypad{ bottom:24px !important; }
+}
+
+/* FINALER PIN SCREEN - oben fix + fixe Zahlentastatur, nur Ziffern */
+.pinLock{
+align-items:flex-start !important;
+justify-content:center !important;
+padding:0 !important;
+overflow:hidden !important;
+background:#000 !important;
+}
+
+.pinBox{
+margin-top:150px !important;
+width:100% !important;
+max-width:none !important;
+background:transparent !important;
+box-shadow:none !important;
+border-radius:0 !important;
+padding:0 22px !important;
+}
+
+.pinLogo{
+width:96px !important;
+height:auto !important;
+display:block !important;
+margin:0 auto 26px auto !important;
+}
+
+.pinTitle{
+font-size:25px !important;
+font-weight:800 !important;
+line-height:1.1 !important;
+text-align:center !important;
+margin:0 0 20px 0 !important;
+}
+
+.pinSub{
+font-size:15px !important;
+line-height:1.35 !important;
+text-align:center !important;
+color:#b8b8bd !important;
+margin:0 0 28px 0 !important;
+white-space:normal !important;
+}
+
+.pinInput{
+width:100% !important;
+height:62px !important;
+border-radius:18px !important;
+background:#1c1c1f !important;
+border:2px solid #007aff !important;
+color:white !important;
+font-size:26px !important;
+letter-spacing:12px !important;
+text-align:center !important;
+margin:0 !important;
+}
+
+.pinError{
+max-width:360px !important;
+margin:12px auto 0 auto !important;
+}
+
+.pinKeypad{
+position:fixed !important;
+left:0 !important;
+right:0 !important;
+bottom:36px !important;
+display:grid !important;
+grid-template-columns:repeat(3, 1fr) !important;
+gap:8px 8px !important;
+padding:0 11px !important;
+z-index:20001 !important;
+}
+
+.pinKeypad button{
+height:64px !important;
+border-radius:7px !important;
+border:none !important;
+background:linear-gradient(180deg,#686868,#3f3f3f) !important;
+color:white !important;
+font-family:"MontserratLocal" !important;
+font-size:32px !important;
+font-weight:300 !important;
+line-height:1 !important;
+padding:0 !important;
+display:flex !important;
+align-items:center !important;
+justify-content:center !important;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.pinKeypad button small{
+display:none !important;
+}
+
+.pinKeypad .pinBack{
+background:transparent !important;
+box-shadow:none !important;
+font-size:34px !important;
+font-weight:300 !important;
+}
+
+@media (max-height: 820px){
+.pinBox{ margin-top:135px !important; }
+.pinLogo{ width:88px !important; margin-bottom:22px !important; }
+.pinTitle{ font-size:24px !important; margin-bottom:16px !important; }
+.pinSub{ font-size:14px !important; margin-bottom:24px !important; }
+.pinInput{ height:58px !important; }
+.pinKeypad{ bottom:30px !important; }
+.pinKeypad button{ height:58px !important; font-size:30px !important; }
+}
+
+@media (max-height: 760px){
+.pinBox{ margin-top:110px !important; }
+.pinLogo{ width:82px !important; margin-bottom:18px !important; }
+.pinTitle{ font-size:23px !important; margin-bottom:14px !important; }
+.pinSub{ font-size:13.5px !important; margin-bottom:20px !important; }
+.pinInput{ height:54px !important; }
+.pinKeypad{ bottom:24px !important; }
+.pinKeypad button{ height:54px !important; font-size:28px !important; }
+}
+
+/* Gelber Touch-Effekt beim Gedrückthalten */
+.pinKeypad button{
+-webkit-tap-highlight-color: transparent !important;
+transition: background .08s ease, transform .05s ease !important;
+}
+
+.pinKeypad button:active{
+background:#d7e000 !important;
+color:#000 !important;
+transform:scale(0.98) !important;
+}
+
+.pinKeypad .pinBack:active{
+background:transparent !important;
+color:#d7e000 !important;
+}
+
+/* FINAL Abmelden Button oben links */
+.logoutTop{
+position:absolute;
+left:0;
+top:50%;
+transform:translateY(-50%);
+height:32px;
+padding:0 14px;
+border:1px solid rgba(213,221,0,.8);
+border-radius:13px;
+background:transparent;
+color:#d5dd00;
+font-size:14px;
+font-weight:500;
+}
+.logoutTop:active{
+background:rgba(213,221,0,.18);
+}
+
+/* FINAL Punkte: Datum bleibt fix, Punkte starten immer gleich tief; bei vielen Terminen wächst nur die Höhe */
+.day{
+min-height:68px !important;
+padding:7px 5px 18px 5px !important;
+height:auto !important;
+overflow:visible !important;
+}
+.day.manyDots{
+min-height:92px !important;
+}
+.day .num{
+margin:0 auto 0 auto !important;
+flex:0 0 24px !important;
+}
+.day .dots{
+margin-top:12px !important;
+width:100% !important;
+display:grid !important;
+grid-template-columns:repeat(5, 6px) !important;
+grid-auto-rows:6px !important;
+gap:4px 4px !important;
+justify-content:center !important;
+align-content:start !important;
+}
+.day .dot{
+width:6px !important;
+height:6px !important;
+border-radius:50% !important;
+}
+.day .count{
+position:absolute !important;
+right:6px !important;
+bottom:5px !important;
+font-size:14px !important;
+line-height:1 !important;
+color:#aaa !important;
+}
+
+/* FIX 2026-05-10: kein seitliches Verschieben + Abmelden klein + Login-Titel wie Referenz */
+html, body{
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:hidden !important;
+  overscroll-behavior-x:none !important;
+}
+body{
+  position:fixed !important;
+  inset:0 !important;
+}
+.top,
+.content,
+.bottom,
+.header,
+.stats,
+.monthBar,
+.weekdays,
+.calendar,
+.detailBox,
+.formOverlay,
+.formSheet{
+  max-width:100% !important;
+  overflow-x:hidden !important;
+}
+.content{
+  left:0 !important;
+  right:0 !important;
+  width:100% !important;
+  touch-action:pan-y !important;
+  overscroll-behavior-x:none !important;
+}
+.calendar{
+  width:100% !important;
+  min-width:0 !important;
+}
+.day{
+  min-width:0 !important;
+}
+.logo{
+  right:0 !important;
+  width:45px !important;
+}
+.logoutTop{
+  width:auto !important;
+  min-width:82px !important;
+  max-width:92px !important;
+  height:30px !important;
+  padding:0 12px !important;
+  left:0 !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  border-radius:13px !important;
+  font-size:13px !important;
+  line-height:30px !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+}
+.logoutTop:active{
+  background:rgba(213,221,0,.18) !important;
+}
+
+/* ===== MR BEAUTY FINAL KALENDER-PUNKTE =====
+   Für jeden Tag 1–31:
+   - Punkte immer gleich hoch unter der Datumszahl
+   - maximal 4 Punkte pro Zeile
+   - Punkte-Reihen immer mittig
+   - graue Anzahl immer mittig unten, 2px vom unteren Rand
+   - wenn eine Woche mehr Höhe braucht, wird die ganze Woche gleich hoch
+*/
+.calendar{
+  align-items:stretch !important;
+}
+
+.day{
+  position:relative !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+  align-self:stretch !important;
+}
+
+.day.rowDots1{ height:68px !important; min-height:68px !important; max-height:68px !important; }
+.day.rowDots2{ height:76px !important; min-height:76px !important; max-height:76px !important; }
+.day.rowDots3{ height:84px !important; min-height:84px !important; max-height:84px !important; }
+.day.rowDots4{ height:92px !important; min-height:92px !important; max-height:92px !important; }
+
+.day .dots{
+  position:absolute !important;
+  top:36px !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  width:34px !important;
+  max-width:34px !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  justify-content:center !important;
+  align-content:flex-start !important;
+  align-items:flex-start !important;
+  gap:3px 3px !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+}
+
+.day .dot{
+  width:6px !important;
+  height:6px !important;
+  min-width:6px !important;
+  min-height:6px !important;
+  max-width:6px !important;
+  max-height:6px !important;
+  border-radius:50% !important;
+  margin:0 !important;
+  flex:0 0 6px !important;
+}
+
+.day .count{
+  position:absolute !important;
+  left:50% !important;
+  right:auto !important;
+  bottom:2px !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  width:auto !important;
+  min-width:10px !important;
+  text-align:center !important;
+  font-size:10px !important;
+  line-height:10px !important;
+  font-weight:400 !important;
+  color:rgba(255,255,255,.68) !important;
+  opacity:.68 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* App darf nie seitlich rutschen */
+html, body{
+  overflow-x:hidden !important;
+  width:100% !important;
+  max-width:100% !important;
+}
+
+/* FINAL: Alle Punkte immer gleich gross */
+.day .dot,
+.day.manyDots .dot{
+  width:6px !important;
+  height:6px !important;
+  min-width:6px !important;
+  min-height:6px !important;
+  max-width:6px !important;
+  max-height:6px !important;
+  flex:0 0 6px !important;
+}
+
+.day .dots,
+.day.manyDots .dots{
+  gap:3px 3px !important;
+}
+
+/* FIREBASE LOGIN - nur Startseite */
+
+
+
+
+body.auth-loading .top,
+body.auth-loading .content,
+body.auth-loading .bottom,
+body.logged-out .top,
+body.logged-out .content,
+body.logged-out .bottom{
+  display:none !important;
+}
+
+body.logged-out .loginLock{
+  display:flex;
+}
+
+body.logged-in .loginLock{
+  display:none !important;
+}
+
+.loginLock{
+  display:none;
+  position:fixed;
+  inset:0;
+  width:100%;
+  min-height:100dvh;
+  background:#000;
+  z-index:20000;
+  overflow:hidden;
+  color:#000;
+  font-family:"MontserratLocal";
+  align-items:flex-start;
+  justify-content:center;
+  box-sizing:border-box;
+  padding:calc(env(safe-area-inset-top) + 58px) 0 0;
+}
+
+.loginBox{
+  width:100%;
+  max-width:430px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  box-sizing:border-box;
+}
+
+.loginLogo{
+  width:176px;
+  height:auto;
+  display:block;
+  margin:0 auto 92px auto;
+}
+
+.loginCard{
+  width:calc(100% - 48px);
+  max-width:370px;
+  background:#f4f4f4;
+  border-radius:24px;
+  box-shadow:0 0 28px rgba(255,255,255,.12);
+  box-sizing:border-box;
+  padding:68px 24px 21px;
+  transform:translateY(-20px);
+}
+
+.loginTitle{
+  text-align:center;
+  color:#000;
+  font-size:34px;
+  font-weight:700;
+  line-height:1;
+  margin:0 0 38px 0;
+  letter-spacing:-.8px;
+}
+
+.loginSub{
+  display:none;
+}
+
+.loginLabel{
+  display:block;
+  color:#000;
+  font-size:14px;
+  font-weight:400;
+  line-height:1;
+  margin:0 0 9px 0;
+}
+
+.loginFieldWrap{
+  width:100%;
+  height:50px;
+  border:1px solid #999;
+  border-radius:7px;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  padding:0 15px;
+  margin:0 0 22px 0;
+  box-sizing:border-box;
+}
+
+.loginFieldWrap:focus-within{
+  border-color:#C8CF04;
+}
+
+.loginFieldWrap.loginInvalid{
+  border-color:#ff4f4f !important;
+}
+
+.loginIcon{
+  display:none;
+}
+
+.loginText{
+  min-width:0;
+  flex:1;
+}
+
+.loginInput{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#000;
+  font-size:14px;
+  font-weight:400;
+  line-height:1.2;
+  padding:0;
+  font-family:"MontserratLocal";
+  min-width:0;
+  box-sizing:border-box;
+  caret-color:#000;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+.loginInput::placeholder{
+  color:#8f8f8f;
+  opacity:1;
+  font-size:14px;
+  font-weight:400;
+}
+
+.loginEye{
+  width:31px;
+  height:31px;
+  border:0;
+  background:transparent !important;
+  background-color:transparent !important;
+  padding:0;
+  margin-left:8px;
+  color:#C8CF04;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 31px;
+  appearance:none;
+  -webkit-appearance:none;
+  -webkit-tap-highlight-color:rgba(0,0,0,0);
+  outline:none;
+  box-shadow:none !important;
+  border-radius:0;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+}
+
+.loginEye:focus,
+.loginEye:active,
+.loginEye:hover{
+  background:transparent !important;
+  background-color:transparent !important;
+  outline:none;
+  box-shadow:none !important;
+}
+
+.loginEye svg{
+  width:26px;
+  height:26px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  pointer-events:none;
+}
+
+.loginRow{
+  width:100%;
+  position:relative;
+  display:grid;
+  grid-template-columns:1fr;
+  align-items:start;
+  gap:14px;
+  margin:2px 0 22px 0;
+}
+
+.forgotBtn{
+  justify-self:start;
+  width:auto;
+  height:auto;
+  border:0;
+  background:transparent;
+  color:#000;
+  font-family:"MontserratLocal";
+  font-size:14px;
+  font-weight:400;
+  line-height:1;
+  padding:0;
+  border-radius:0;
+  white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  user-select:none;
+  transition:color .16s ease, opacity .16s ease;
+  transform:translateY(-5px);
+}
+
+.forgotBtn:focus,
+.forgotBtn:active{
+  outline:none;
+  background:transparent;
+  box-shadow:none;
+}
+
+.forgotBtn.forgotFlash{
+  color:#8a8a8a;
+}
+
+.forgotMsg{
+  position:absolute;
+  left:0;
+  top:20px;
+  color:#ff4f4f;
+  font-size:11px;
+  font-weight:400;
+  line-height:1.2;
+  background:transparent;
+  padding:0;
+  margin:0;
+  opacity:0;
+  pointer-events:none;
+  white-space:nowrap;
+  transition:opacity .16s ease;
+}
+
+.forgotMsg.show{
+  opacity:1;
+}
+
+.rememberBox{
+  justify-self:start;
+  width:auto;
+  height:auto;
+  border:0;
+  background:transparent;
+  padding:0;
+  border-radius:0;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#000;
+  font-family:"MontserratLocal";
+  font-size:14px;
+  font-weight:400;
+  line-height:1;
+  white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  user-select:none;
+  transform:translateY(29px);
+}
+
+.rememberBox:focus,
+.rememberBox:active{
+  outline:none;
+  background:transparent;
+  box-shadow:none;
+}
+
+.rememberBox span{
+  -webkit-tap-highlight-color:transparent;
+}
+
+.rememberCheck{
+  order:2;
+  width:21px;
+  height:21px;
+  border:1.5px solid #C8CF04;
+  border-radius:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#C8CF04;
+  font-size:18px;
+  font-weight:700;
+  line-height:1;
+  box-sizing:border-box;
+}
+
+.rememberBox.off .rememberCheck{
+  color:transparent;
+}
+
+.loginBtn{
+  width:100%;
+  height:51px;
+  border:0;
+  border-radius:7px;
+  background:#C8CF04;
+  color:#000;
+  font-family:"MontserratLocal";
+  font-size:18px;
+  font-weight:400;
+  line-height:1;
+  position:relative;
+  padding:0;
+  transition:filter .08s ease, transform .05s ease;
+  transform:translateY(-22px);
+}
+
+.loginBtn:active{
+  filter:brightness(1.08);
+  transform:translateY(-22px) scale(.99);
+}
+
+.loginBtn.loading{
+  pointer-events:none;
+  color:transparent;
+}
+
+.loginBtn.loading::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:20px;
+  height:20px;
+  margin:-10px 0 0 -10px;
+  border:2px solid rgba(255,255,255,.55);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:loginSpin .8s linear infinite;
+}
+
+@keyframes loginSpin{to{transform:rotate(360deg)}}
+
+.loginError{
+  display:none !important;
+  margin-top:12px;
+  padding:9px 12px;
+  border-radius:10px;
+  text-align:center;
+  font-size:13px;
+  line-height:1.3;
+  background:#3a0707;
+  color:#ff6b6b;
+}
+
+.loginError.show{
+  display:block !important;
+}
+
+.loginHint{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  color:#fff;
+  font-size:15px;
+  font-weight:400;
+  line-height:1.3;
+  margin-top:31px;
+  text-align:center;
+  width:100%;
+  padding:0 18px;
+  box-sizing:border-box;
+}
+
+.loginShield{
+  color:#C8CF04;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+}
+
+.loginShield svg{
+  width:25px;
+  height:25px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+
+/* NUR LOGIN: obere Inhalte 40px nach oben, Einloggen-Button bleibt unverändert */
+.loginTitle,
+.loginFieldWrap,
+.loginRow{
+  transform:translateY(-40px);
+}
+
+/* NUR LOGIN: E-Mail/Passwort-Text 5px tiefer als vorher */
+.loginLabel{
+  transform:translateY(-35px);
+}
+
+/* NUR LOGIN: Passwort vergessen 5px höher, Eingeloggt bleiben darunter */
+
+/* NUR LOGIN: Text im E-Mail- und Passwortfeld exakt gleiche Schriftgröße wie Labels */
+#loginEmail.loginInput,
+#loginPassword.loginInput,
+.loginInput::placeholder{
+  font-size:14px !important;
+  font-weight:400 !important;
+  line-height:1 !important;
+  letter-spacing:0 !important;
+}
+#loginPassword.loginInput{
+  letter-spacing:0 !important;
+}
+
+/* NUR LOGIN: Einloggen-Button 22px nach oben, Karte und Rest bleiben unverändert */
+@media (max-height:820px){
+  .loginLock{padding-top:calc(env(safe-area-inset-top) + 58px);}
+  .loginLogo{width:162px;margin-bottom:52px;}
+  .loginCard{padding:64px 24px 18px;}
+  .loginTitle{font-size:32px;margin-bottom:34px;}
+  .loginFieldWrap{height:48px;margin-bottom:19px;}
+  .loginRow{margin-bottom:20px;}
+  .loginHint{margin-top:24px;}
+}
+
+@media (max-width:374px){
+  .loginCard{width:calc(100% - 40px);padding-left:20px;padding-right:20px;}
+  .forgotBtn,.rememberBox{font-size:13px;}
+  .loginRow{gap:8px;}
+  .rememberCheck{width:20px;height:20px;}
+}
+
+/* Terminbuch App-Fixes */
+.logo{
+  width:61px !important;
+  height:auto !important;
+  object-fit:contain !important;
+}
+
+.form .field:focus,
+.form .timeWrap:focus-within,
+#datumBox.dateButton:focus{
+  outline:none !important;
+  border:2px solid #C8CF04 !important;
+}
+
+.form .btn.active{
+  background:#C8CF04 !important;
+  color:#000 !important;
+}
+
+/* NAME-VORSCHLÄGE: feste Position, keine Textverschiebung */
+.nameSuggest{
+  position:fixed;
+  display:none;
+  z-index:26000;
+  background:#1c1c1f;
+  border:1px solid #333;
+  border-radius:12px;
+  overflow:hidden;
+  max-height:230px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  touch-action:pan-y;
+  box-shadow:0 10px 28px rgba(0,0,0,.45);
+  -webkit-overflow-scrolling:touch;
+  transform:translateZ(0);
+}
+.nameSuggest.show{display:block;}
+.nameSuggestItem{
+  position:relative;
+  height:46px;
+  overflow:hidden;
+  border-bottom:1px solid #2a2a2a;
+  background:#1c1c1f;
+}
+.nameSuggestItem:last-child{border-bottom:none;}
+.nameSuggestText{
+  position:absolute;
+  left:0; right:0; top:0; bottom:0;
+  display:flex;
+  align-items:center;
+  padding:0 64px 0 16px;
+  box-sizing:border-box;
+  background:#1c1c1f;
+  color:#b3b3b3;
+  font-size:14px;
+  line-height:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  transform:none;
+  z-index:2;
+}
+.nameSuggestItem.reveal .nameSuggestText{transform:none;}
+.nameSuggestDelete{
+  position:absolute;
+  right:0; top:0; bottom:0;
+  width:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#ff3b30;
+  color:#fff;
+  font-size:26px;
+  line-height:1;
+  z-index:3;
+  transform:translateX(54px);
+  transition:transform .18s ease;
+}
+.nameSuggestItem.reveal .nameSuggestDelete{transform:translateX(0);}
+
+/* MR Beauty: kleine Final-Korrekturen */
+
+.nameSuggest{z-index:2147483647!important;pointer-events:auto!important}
+.nameSuggestItem,.nameSuggestText{pointer-events:auto!important}
+.holidayNotice{background:#1c1c1f;border:2px solid #C8CF04;color:#fff;border-radius:18px;padding:16px 18px;margin:16px 0;font-size:15px;line-height:1.35}
+.holidayNotice strong{color:#C8CF04}
+
+/* MR Beauty: X oben links grösser und mittig */
+.closeBtn,.close,.closeModal,.modalClose,button[aria-label="Schliessen"],button[aria-label="Schließen"]{
+  display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;
+}
+.closeBtn{font-size:28px!important}
+.closeBtn svg,.close svg,.closeModal svg,.modalClose svg{width:26px!important;height:26px!important}
+
+/* Vorschlagswahl blockiert Kalender sicher */
+body.mrSuggestChoosing #datumBox,body.mrSuggestChoosing .dateButton,
+/* MR Beauty Final: X Button */
+.closeBtn{
+  width:46px !important;
+  height:46px !important;
+  border-radius:50% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  font-size:30px !important;
+  line-height:1 !important;
+  font-weight:400 !important;
+}
+.closeBtn::before{
+  content:"" !important;
+}
+.closeBtn{
+  text-align:center !important;
+}
+
+#saveBtn{
+background:#C8CF04 !important;
+color:#000 !important;
+font-weight:600 !important;
+}
+
+/* MR Beauty: Pflichtfeld roter Rahmen */
+.field.mrRequiredError,
+.timeWrap.mrRequiredError,
+.dateButton.mrRequiredError{
+  border:2px solid #ff4d4d !important;
+  box-shadow:none !important;
+}
+
+/* MR BEAUTY FINAL: Eingabefelder bleiben dunkel, kein gelbes iPhone/Autofill-Feld */
+.form .field,
+.form .field:focus,
+.form .field:active,
+#vorname,
+#nachname{
+  background:#1c1c1f !important;
+  background-color:#1c1c1f !important;
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+.form .field:-webkit-autofill,
+.form .field:-webkit-autofill:hover,
+.form .field:-webkit-autofill:focus,
+#vorname:-webkit-autofill,
+#nachname:-webkit-autofill{
+  -webkit-box-shadow:0 0 0 1000px #1c1c1f inset !important;
+  box-shadow:0 0 0 1000px #1c1c1f inset !important;
+  background:#1c1c1f !important;
+  background-color:#1c1c1f !important;
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+.form .field::selection{
+  background:rgba(200,207,4,.35) !important;
+  color:#fff !important;
+}
+
+
+
+/* MR Beauty: Ferienverwaltung */
+.content{bottom:132px !important;}
+.bottom{padding-top:15px !important;}
+.holidayManageBtn{
+  margin-top:10px !important;
+  background:#333 !important;
+  color:#fff !important;
+}
+.day.holiday:not(.today) .num{
+  background:#6b6b6f !important;
+  color:#fff !important;
+}
+.day.holiday.today .num{
+  background:#d5dd00 !important;
+  color:#000 !important;
+}
+
+/* Ferien-Fenster wie "Neuer Termin": schwarzer Hintergrund, kein Karten-Popup */
+.holidayOverlay{
+  position:fixed;
+  inset:0;
+  background:#000 !important;
+  display:none;
+  z-index:120000;
+  overflow:hidden;
+  color:#fff;
+}
+.holidayOverlay.show{display:block !important;}
+.holidayBox{
+  position:absolute;
+  inset:0;
+  width:100%;
+  max-width:none !important;
+  max-height:none !important;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  background:#000 !important;
+  border-radius:0 !important;
+  padding:calc(env(safe-area-inset-top) + 15px) 15px calc(env(safe-area-inset-bottom) + 20px) 15px !important;
+  box-shadow:none !important;
+  box-sizing:border-box;
+}
+.holidayHeader{
+  position:relative;
+  height:50px;
+  margin-bottom:22px;
+}
+.holidayCloseBtn{
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:46px !important;
+  height:46px !important;
+  border-radius:50% !important;
+  background:#1c1c1f !important;
+  color:#fff !important;
+  border:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:30px !important;
+  line-height:1 !important;
+  font-weight:400 !important;
+}
+.holidayTitle{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  font-size:22px !important;
+  font-weight:bold !important;
+  color:#fff;
+  margin:0 !important;
+  white-space:nowrap;
+}
+.holidayDateRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:10px !important;
+  margin:0 0 10px 0 !important;
+}
+.holidayFieldGroup{min-width:0 !important;}
+.holidayLabel{
+  font-size:17px !important;
+  color:#9a9a9f !important;
+  margin:0 0 8px 0 !important;
+}
+.holidayInput{
+  width:100% !important;
+  height:46px !important;
+  border:none !important;
+  border-radius:12px !important;
+  background:#1c1c1f !important;
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  font-size:17px !important;
+  padding:0 12px !important;
+  font-family:"MontserratLocal" !important;
+  box-sizing:border-box !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  color-scheme:dark !important;
+}
+.holidayInput[type="date"]{
+  text-align:center !important;
+  min-width:0 !important;
+}
+.holidayInput::-webkit-date-and-time-value{
+  text-align:center !important;
+  color:#fff !important;
+}
+.holidayInput::-webkit-calendar-picker-indicator{
+  filter:invert(1) !important;
+  opacity:.9 !important;
+}
+.holidayInput:focus{
+  outline:none !important;
+  box-shadow:inset 0 0 0 2px #C8CF04 !important;
+}
+.holidayActions{
+  display:flex !important;
+  justify-content:flex-end !important;
+  margin:34px 0 24px 0 !important;
+}
+.holidayActions button,
+.holidayItemBtns button{
+  height:44px !important;
+  padding:0 !important;
+  border-radius:14px !important;
+  font-size:16px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+.holidaySave{background:#C8CF04 !important;color:#000 !important;font-weight:700 !important;width:calc(50% - 5px) !important;}
+.holidayList{
+  margin-top:0 !important;
+  border-top:1px solid #2a2a2a !important;
+  padding-top:16px !important;
+}
+.holidayItem{
+  background:#1c1c1f !important;
+  border-radius:14px !important;
+  padding:12px !important;
+  margin-top:9px !important;
+  color:#fff !important;
+  font-size:16px !important;
+  line-height:1.35 !important;
+}
+.holidayItemTitle{font-weight:700;color:#d0d0d0;margin-bottom:3px;}
+.holidayItemBtns{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:10px !important;
+  margin-top:10px !important;
+}
+.holidayEdit{background:#444 !important;color:#fff !important;}
+.holidayDelete{background:#ff3b30 !important;color:#fff !important;}
+.holidayEmpty{color:#777;font-size:14px;padding:8px 0;}
+
+/* MR Beauty Final: Kalender/Picker Gelb statt Blau */
+.customDateNav{
+  color:#C8CF04 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+  padding:0 !important;
+}
+.customOk{
+  background:#C8CF04 !important;
+  color:#000 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+  padding:0 !important;
+}
+.timeInput,
+.holidayInput{
+  accent-color:#C8CF04 !important;
+}
+
+
+/* MR Beauty: iPhone-ähnlicher Uhrzeit-Roller */
+.customTimeOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.62);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+  padding:20px;
+  backdrop-filter:blur(1px);
+  -webkit-backdrop-filter:blur(1px);
+}
+.customTimeBox{
+  width:100%;
+  max-width:315px;
+  background:rgba(31,31,34,.96);
+  border-radius:26px;
+  padding:28px 18px 18px 18px;
+  box-shadow:0 25px 80px rgba(0,0,0,.75);
+  overflow:hidden;
+}
+.customTimeWheelArea{
+  position:relative;
+  height:185px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:22px;
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, #000 24%, #000 76%, transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%, #000 24%, #000 76%, transparent 100%);
+}
+.customTimeHighlight{
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  height:44px;
+  transform:translateY(-50%);
+  background:rgba(255,255,255,.10);
+  border-radius:13px;
+  pointer-events:none;
+  z-index:1;
+}
+.customTimeWheel{
+  position:relative;
+  z-index:2;
+  height:185px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  scrollbar-width:none;
+  padding:70px 0;
+  touch-action:pan-y;
+}
+.customTimeWheel::-webkit-scrollbar{display:none;}
+.customTimeItem{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-family:"MontserratLocal";
+  font-size:34px;
+  line-height:1;
+  font-weight:400;
+  scroll-snap-align:center;
+  user-select:none;
+  -webkit-user-select:none;
+  opacity:.38;
+  transform:scale(.88);
+  transition:opacity .12s ease, transform .12s ease;
+}
+.customTimeItem.active{
+  opacity:1;
+  transform:scale(1);
+}
+.customTimeActions{
+  display:grid;
+  grid-template-columns:1fr 64px;
+  gap:12px;
+  align-items:center;
+}
+.customTimeReset{
+  height:54px !important;
+  border-radius:18px !important;
+  background:#2c2c2e !important;
+  color:#fff !important;
+  font-size:18px !important;
+  padding:0 !important;
+}
+.customTimeOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  padding:0 !important;
+  justify-self:end !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+
+
+/* MR Beauty FINAL TEST: Uhrzeit-Picker näher am iPhone */
+.customTimeBox{
+  max-width:340px !important;
+  background:rgba(31,31,34,.96) !important;
+  border-radius:28px !important;
+  padding:28px 18px 18px 18px !important;
+}
+.customTimeWheelArea{
+  height:185px !important;
+  gap:18px !important;
+  margin-bottom:18px !important;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 10%, #000 28%, #000 72%, rgba(0,0,0,.18) 90%, transparent 100%) !important;
+  mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 10%, #000 28%, #000 72%, rgba(0,0,0,.18) 90%, transparent 100%) !important;
+}
+.customTimeHighlight{
+  height:44px !important;
+  border-radius:13px !important;
+  background:rgba(255,255,255,.105) !important;
+}
+.customTimeWheel{
+  height:185px !important;
+  padding:70px 0 !important;
+}
+.customTimeItem{
+  height:44px !important;
+  font-size:34px !important;
+  font-weight:400 !important;
+  letter-spacing:-1px !important;
+}
+.customTimeActions{
+  grid-template-columns:1fr 64px !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+.customTimeReset{
+  height:54px !important;
+  border-radius:18px !important;
+  background:#2c2c2e !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:400 !important;
+  padding:0 !important;
+}
+.customTimeOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+
+
+/* MR Beauty FINAL: Uhrzeit-Picker näher an iOS – kleinere Zahlen, mehr sichtbare Rollen */
+.customTimeBox{
+  max-width:340px !important;
+  background:rgba(31,31,34,.96) !important;
+  border-radius:28px !important;
+  padding:28px 18px 18px 18px !important;
+}
+.customTimeWheelArea{
+  height:245px !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:4px !important;
+  margin-bottom:18px !important;
+  overflow:hidden !important;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.25) 8%, #000 22%, #000 78%, rgba(0,0,0,.25) 92%, transparent 100%) !important;
+  mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.25) 8%, #000 22%, #000 78%, rgba(0,0,0,.25) 92%, transparent 100%) !important;
+}
+.customTimeHighlight{
+  height:38px !important;
+  border-radius:13px !important;
+  background:rgba(255,255,255,.105) !important;
+}
+.customTimeWheel{
+  height:245px !important;
+  padding:103px 0 !important;
+}
+.customTimeItem{
+  height:38px !important;
+  font-size:27px !important;
+  font-weight:400 !important;
+  letter-spacing:-.5px !important;
+}
+.customTimeActions{
+  grid-template-columns:1fr 64px !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+.customTimeReset{
+  height:54px !important;
+  border-radius:18px !important;
+  background:#2c2c2e !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:400 !important;
+  padding:0 !important;
+}
+.customTimeOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+
+
+/* MR Beauty FINAL VIDEO-FIX: Uhrzeit-Roller näher an iOS */
+.customTimeBox{
+  max-width:340px !important;
+  background:rgba(31,31,34,.96) !important;
+  border-radius:28px !important;
+  padding:26px 18px 18px 18px !important;
+}
+.customTimeWheelArea{
+  height:252px !important;
+  width:205px !important;
+  margin:0 auto 18px auto !important;
+  display:grid !important;
+  grid-template-columns:102px 102px !important;
+  gap:1px !important;
+  column-gap:1px !important;
+  overflow:hidden !important;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.22) 7%, #000 20%, #000 80%, rgba(0,0,0,.22) 93%, transparent 100%) !important;
+  mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.22) 7%, #000 20%, #000 80%, rgba(0,0,0,.22) 93%, transparent 100%) !important;
+}
+.customTimeHighlight{
+  left:calc((340px - 205px) / -2 + 18px) !important;
+  right:calc((340px - 205px) / -2 + 18px) !important;
+  height:28px !important;
+  border-radius:13px !important;
+  background:rgba(255,255,255,.105) !important;
+}
+.customTimeWheel{
+  height:252px !important;
+  padding:112px 0 !important;
+  scroll-behavior:auto !important;
+}
+.customTimeItem{
+  height:28px !important;
+  font-size:22px !important;
+  font-weight:400 !important;
+  letter-spacing:-.3px !important;
+  justify-content:center !important;
+  padding:0 !important;
+  transition:none !important;
+  will-change:transform,opacity !important;
+}
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  justify-content:center !important;
+  padding:0 !important;
+}
+.customTimeActions{
+  grid-template-columns:1fr 64px !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+.customTimeReset{
+  height:54px !important;
+  border-radius:18px !important;
+  background:#2c2c2e !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:400 !important;
+  padding:0 !important;
+}
+.customTimeOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+
+
+/* MR Beauty FINAL 3: Uhrzeit-Roller – Fenster kürzer + iOS-Balken länger/rund */
+.customTimeBox{
+  max-width:340px !important;
+  background:rgba(31,31,34,.96) !important;
+  border-radius:28px !important;
+  padding:18px 18px 18px 18px !important;
+}
+.customTimeWheelArea{
+  height:224px !important;
+  width:215px !important;
+  margin:0 auto 14px auto !important;
+  display:grid !important;
+  grid-template-columns:107px 107px !important;
+  gap:1px !important;
+  column-gap:1px !important;
+  overflow:hidden !important;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.25) 6%, #000 19%, #000 81%, rgba(0,0,0,.25) 94%, transparent 100%) !important;
+  mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.25) 6%, #000 19%, #000 81%, rgba(0,0,0,.25) 94%, transparent 100%) !important;
+}
+.customTimeHighlight{
+  left:-58px !important;
+  right:-58px !important;
+  height:30px !important;
+  border-radius:14px !important;
+  background:rgba(255,255,255,.105) !important;
+}
+.customTimeWheel{
+  height:224px !important;
+  padding:97px 0 !important;
+  scroll-behavior:auto !important;
+}
+.customTimeItem{
+  height:30px !important;
+  font-size:23px !important;
+  font-weight:400 !important;
+  letter-spacing:-.35px !important;
+  justify-content:center !important;
+  padding:0 !important;
+  transition:none !important;
+  will-change:transform,opacity !important;
+}
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  justify-content:center !important;
+  padding:0 !important;
+}
+.customTimeActions{
+  grid-template-columns:1fr 64px !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+.customTimeReset{
+  height:54px !important;
+  border-radius:18px !important;
+  background:#2c2c2e !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:400 !important;
+  padding:0 !important;
+}
+.customTimeOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+
+
+/* MR Beauty FINAL 4: Uhrzeit-Roller – langer runder iOS-Balken, volle Touchflächen, Rad-Tiefe */
+.customTimeBox{
+  max-width:340px !important;
+  background:rgba(31,31,34,.96) !important;
+  border-radius:28px !important;
+  padding:18px 18px 18px 18px !important;
+}
+.customTimeWheelArea{
+  height:224px !important;
+  width:100% !important;
+  margin:0 auto 14px auto !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:0 !important;
+  column-gap:0 !important;
+  overflow:hidden !important;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 5%, #000 18%, #000 82%, rgba(0,0,0,.18) 95%, transparent 100%) !important;
+  mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 5%, #000 18%, #000 82%, rgba(0,0,0,.18) 95%, transparent 100%) !important;
+}
+.customTimeHighlight{
+  left:0 !important;
+  right:0 !important;
+  height:30px !important;
+  border-radius:15px !important;
+  background:rgba(255,255,255,.105) !important;
+}
+.customTimeWheel{
+  height:224px !important;
+  width:100% !important;
+  padding:97px 0 !important;
+  scroll-behavior:auto !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+  overscroll-behavior:contain !important;
+  scrollbar-width:none !important;
+  scroll-snap-type:none !important;
+}
+.customTimeWheel::-webkit-scrollbar{display:none !important;}
+.customTimeItem{
+  height:30px !important;
+  font-size:23px !important;
+  font-weight:400 !important;
+  letter-spacing:-.35px !important;
+  display:flex !important;
+  align-items:center !important;
+  padding:0 !important;
+  transition:none !important;
+  will-change:transform,opacity,filter !important;
+  transform-origin:center center !important;
+}
+#customHourWheel .customTimeItem{
+  justify-content:flex-end !important;
+  padding-right:5px !important;
+}
+#customMinuteWheel .customTimeItem{
+  justify-content:flex-start !important;
+  padding-left:5px !important;
+}
+.customTimeActions{
+  grid-template-columns:1fr 64px !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+.customTimeReset{
+  height:54px !important;
+  border-radius:18px !important;
+  background:#2c2c2e !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:400 !important;
+  padding:0 !important;
+}
+.customTimeOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+
+
+/* FINAL 5 */
+.customTimeWheelArea{
+  gap:20px !important;
+}
+
+
+/* MR Beauty FINAL 6: Uhrzeit wie iOS – gerade, 20px Abstand, aktuelle Zeit/Reset */
+.customTimeBox{
+  max-width:340px !important;
+  background:rgba(31,31,34,.96) !important;
+  border-radius:28px !important;
+  padding:18px 18px 18px 18px !important;
+}
+.customTimeWheelArea{
+  height:224px !important;
+  width:100% !important;
+  margin:0 auto 14px auto !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:20px !important;
+  column-gap:20px !important;
+  overflow:hidden !important;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 5%, #000 18%, #000 82%, rgba(0,0,0,.18) 95%, transparent 100%) !important;
+  mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 5%, #000 18%, #000 82%, rgba(0,0,0,.18) 95%, transparent 100%) !important;
+}
+.customTimeHighlight{
+  left:0 !important;
+  right:0 !important;
+  height:30px !important;
+  border-radius:15px !important;
+  background:rgba(255,255,255,.105) !important;
+}
+.customTimeWheel{
+  height:224px !important;
+  width:100% !important;
+  padding:97px 0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+  overscroll-behavior:contain !important;
+  scrollbar-width:none !important;
+  scroll-snap-type:none !important;
+}
+.customTimeWheel::-webkit-scrollbar{display:none !important;}
+.customTimeItem{
+  height:30px !important;
+  font-size:23px !important;
+  font-weight:400 !important;
+  letter-spacing:-.35px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  transition:none !important;
+  transform:none !important;
+  filter:none !important;
+  will-change:opacity !important;
+}
+#customHourWheel .customTimeItem{
+  justify-content:flex-end !important;
+  padding-right:0 !important;
+}
+#customMinuteWheel .customTimeItem{
+  justify-content:flex-start !important;
+  padding-left:0 !important;
+}
+.customTimeItem.active{
+  transform:none !important;
+  filter:none !important;
+}
+.customTimeReset{
+  height:54px !important;
+  border-radius:18px !important;
+  background:#2c2c2e !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:400 !important;
+  padding:0 !important;
+}
+.customTimeOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+
+
+/* MR Beauty FINAL 7: Uhrzeit-Roller – gleiche Ziffernbreite, +20px Abstand, flüssiger */
+.customTimeBox{
+  max-width:340px !important;
+  background:rgba(31,31,34,.96) !important;
+  border-radius:28px !important;
+  padding:18px 18px 18px 18px !important;
+}
+.customTimeWheelArea{
+  height:224px !important;
+  width:100% !important;
+  margin:0 auto 14px auto !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:40px !important;
+  column-gap:40px !important;
+  overflow:hidden !important;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 5%, #000 18%, #000 82%, rgba(0,0,0,.18) 95%, transparent 100%) !important;
+  mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 5%, #000 18%, #000 82%, rgba(0,0,0,.18) 95%, transparent 100%) !important;
+}
+.customTimeHighlight{
+  left:0 !important;
+  right:0 !important;
+  height:30px !important;
+  border-radius:15px !important;
+  background:rgba(255,255,255,.105) !important;
+}
+.customTimeWheel{
+  height:224px !important;
+  width:100% !important;
+  padding:97px 0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+  overscroll-behavior:contain !important;
+  scrollbar-width:none !important;
+  scroll-snap-type:none !important;
+}
+.customTimeWheel::-webkit-scrollbar{display:none !important;}
+.customTimeItem{
+  height:30px !important;
+  font-size:23px !important;
+  font-family:"MontserratLocal",sans-serif !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  font-weight:400 !important;
+  letter-spacing:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  transition:opacity .06s linear, transform .06s linear !important;
+  filter:none !important;
+  will-change:opacity,transform !important;
+}
+#customHourWheel .customTimeItem{
+  justify-content:flex-end !important;
+  padding-right:0 !important;
+}
+#customMinuteWheel .customTimeItem{
+  justify-content:flex-start !important;
+  padding-left:0 !important;
+}
+.customTimeItem.active{
+  transform:scale(1) !important;
+  filter:none !important;
+}
+.customTimeReset{
+  height:54px !important;
+  border-radius:18px !important;
+  background:#2c2c2e !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:400 !important;
+  padding:0 !important;
+}
+.customTimeOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+
+
+/* MR Beauty FINAL 8: Uhrzeit-Roller Montserrat + stabile Farben */
+.customTimeItem{
+  font-family:"MontserratLocal","Montserrat",sans-serif !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  color:rgba(255,255,255,.62) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.62) !important;
+}
+.customTimeItem.active{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+
+/* MR BEAUTY FINAL: Uhrzeit-Rad Ziffern garantiert Montserrat + kleiner */
+
+
+.customTimeItem,
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  font-family:"MontserratLocal","Montserrat",Arial,sans-serif !important;
+  font-size:20px !important;
+  font-weight:400 !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+  color:rgba(255,255,255,.62) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.62) !important;
+}
+.customTimeItem.active,
+#customHourWheel .customTimeItem.active,
+#customMinuteWheel .customTimeItem.active{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+
+/* MR BEAUTY FINAL 9: Montserrat + flüssiges Uhrzeit-Rad ohne Springen */
+
+
+.customTimeWheel{
+  scroll-snap-type:none !important;
+  scroll-behavior:auto !important;
+}
+.customTimeItem,
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  font-family:"MontserratLocal","Montserrat",Arial,sans-serif !important;
+  font-size:20px !important;
+  font-weight:400 !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+  scroll-snap-align:none !important;
+  color:rgba(255,255,255,.62) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.62) !important;
+  transition:opacity .10s linear, transform .10s linear !important;
+}
+.customTimeItem.active,
+#customHourWheel .customTimeItem.active,
+#customMinuteWheel .customTimeItem.active{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+
+/* MR BEAUTY FINAL 10: Uhrzeit-Rad flüssig + Balken weiss / ausserhalb hellgrau */
+.customTimeWheel{
+  scroll-snap-type:none !important;
+  scroll-behavior:auto !important;
+}
+.customTimeItem,
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  font-family:"MontserratLocal","Montserrat",Arial,sans-serif !important;
+  font-size:20px !important;
+  font-weight:400 !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+  scroll-snap-align:none !important;
+  color:rgba(255,255,255,.62) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.62) !important;
+  transition:opacity .08s linear, transform .08s linear !important;
+}
+.customTimeItem.active,
+#customHourWheel .customTimeItem.active,
+#customMinuteWheel .customTimeItem.active{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+
+/* MR BEAUTY FINAL 11: Uhrzeit-Rad ohne Endsprung */
+.customTimeWheel{
+  scroll-snap-type:none !important;
+  scroll-behavior:auto !important;
+}
+.customTimeItem,
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  font-family:"MontserratLocal","Montserrat",Arial,sans-serif !important;
+  font-size:20px !important;
+  font-weight:400 !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+  scroll-snap-align:none !important;
+  color:rgba(255,255,255,.62) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.62) !important;
+  transition:opacity .06s linear, transform .06s linear !important;
+}
+.customTimeItem.active,
+#customHourWheel .customTimeItem.active,
+#customMinuteWheel .customTimeItem.active{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+
+/* MR BEAUTY FINAL 12: Uhrzeit-Rad ohne Endsprung */
+.customTimeWheel{
+  scroll-snap-type:none !important;
+  scroll-behavior:auto !important;
+}
+.customTimeItem,
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  font-family:"MontserratLocal","Montserrat",Arial,sans-serif !important;
+  font-size:20px !important;
+  font-weight:400 !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+  scroll-snap-align:none !important;
+  color:rgba(255,255,255,.62) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.62) !important;
+  transition:opacity .06s linear, transform .06s linear !important;
+}
+.customTimeItem.active,
+#customHourWheel .customTimeItem.active,
+#customMinuteWheel .customTimeItem.active{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+
+/* MR BEAUTY FINAL 13: Uhrzeit-Rad mittig im Balken + flüssiger Snap */
+.customTimeWheelArea{
+  height:224px !important;
+}
+.customTimeHighlight{
+  top:50% !important;
+  height:30px !important;
+  transform:translateY(-50%) !important;
+  border-radius:15px !important;
+}
+.customTimeWheel{
+  height:224px !important;
+  padding:97px 0 !important;
+  scroll-snap-type:none !important;
+  scroll-behavior:auto !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+.customTimeItem,
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  height:30px !important;
+  line-height:30px !important;
+  font-family:"MontserratLocal","Montserrat",Arial,sans-serif !important;
+  font-size:20px !important;
+  font-weight:400 !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+  scroll-snap-align:none !important;
+  color:rgba(255,255,255,.62) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.62) !important;
+  transition:opacity .05s linear, transform .05s linear !important;
+}
+.customTimeItem.active,
+#customHourWheel .customTimeItem.active,
+#customMinuteWheel .customTimeItem.active{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+
+/* MR BEAUTY FINAL: Uhrzeit-Buttons wie Kalender */
+.customTimeActions{
+  display:grid !important;
+  grid-template-columns:1fr 64px !important;
+  gap:12px !important;
+  margin-top:18px !important;
+  align-items:center !important;
+}
+.customTimeReset{
+  background:#2c2c2e !important;
+  color:#fff !important;
+  border-radius:18px !important;
+  height:54px !important;
+  font-size:18px !important;
+  font-weight:400 !important;
+  padding:0 !important;
+  width:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+}
+.customTimeOk{
+  background:#C8CF04 !important;
+  color:#000 !important;
+  border-radius:50% !important;
+  width:58px !important;
+  height:58px !important;
+  min-width:58px !important;
+  max-width:58px !important;
+  padding:0 !important;
+  justify-self:end !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+}
+
+
+/* MR BEAUTY FINAL: Zeit-Häkchen 1:1 wie Kalender-Häkchen */
+.customTimeActions{
+  display:grid !important;
+  grid-template-columns:1fr 64px !important;
+  gap:12px !important;
+  margin-top:18px !important;
+  align-items:center !important;
+}
+.customTimeOk{
+  background:#C8CF04 !important;
+  color:#000 !important;
+  border-radius:50% !important;
+  height:58px !important;
+  width:58px !important;
+  min-width:58px !important;
+  max-width:58px !important;
+  min-height:58px !important;
+  max-height:58px !important;
+  padding:0 !important;
+  margin:0 !important;
+  justify-self:end !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-family:"MontserratLocal" !important;
+  font-size:34px !important;
+  font-weight:400 !important;
+  line-height:1 !important;
+  text-align:center !important;
+  border:0 !important;
+  box-shadow:none !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+.customTimeOk:active{
+  transform:none !important;
+  filter:none !important;
+}
+
+
+/* MR BEAUTY FINAL: Picker-Fenster direkt unter Datum/Uhrzeit-Feldern */
+.customDateOverlay,
+.customTimeOverlay{
+  align-items:flex-start !important;
+  justify-content:center !important;
+  padding:0 20px !important;
+}
+
+/* Position exakt unter der zweiten Eingabezeile Datum / Uhrzeit */
+.customDateBox,
+.customTimeBox{
+  margin-top:265px !important;
+}
+
+/* iPhone kleinere Höhe: leicht höher, damit unten nichts abgeschnitten wird */
+@media (max-height:820px){
+  .customDateBox,
+  .customTimeBox{
+    margin-top:245px !important;
+  }
+}
+
+@media (max-height:760px){
+  .customDateBox,
+  .customTimeBox{
+    margin-top:225px !important;
+  }
+}
+
+
+/* MR BEAUTY FINAL: Datum- und Zeitfenster direkt unter Datum/Uhrzeit-Zeile */
+.customDateOverlay,
+.customTimeOverlay{
+  align-items:flex-start !important;
+  justify-content:center !important;
+  padding:0 20px !important;
+}
+
+.customDateBox,
+.customTimeBox{
+  margin-top:193px !important;
+}
+
+/* kleinere iPhones */
+@media (max-height:820px){
+  .customDateBox,
+  .customTimeBox{
+    margin-top:183px !important;
+  }
+}
+
+@media (max-height:760px){
+  .customDateBox,
+  .customTimeBox{
+    margin-top:173px !important;
+  }
+}
+
+
+html,body,button,input,textarea,select,option,div,span,p,h1,h2,h3,h4,h5,h6,label{font-family:"MontserratLocal" !important;}
+.logo,.loginLogo{font-family:initial !important;}
+
+/* MR BEAUTY FINAL FONT: Montserrat für komplette App, Logo/Sacramento bleibt unverändert */
+@font-face{
+  font-family:"MontserratLocal";
+  src:url("fonts/Montserrat-Regular.ttf") format("truetype");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"MontserratLocal";
+  src:url("fonts/Montserrat-Medium.ttf") format("truetype");
+  font-weight:500;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"MontserratLocal";
+  src:url("fonts/Montserrat-SemiBold.ttf") format("truetype");
+  font-weight:600;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"MontserratLocal";
+  src:url("fonts/Montserrat-Bold.ttf") format("truetype");
+  font-weight:700 900;
+  font-style:normal;
+  font-display:swap;
+}
+
+html,
+body,
+body *:not(.logo):not(.loginLogo):not(.pinLogo):not([class*="logo"]):not([class*="Logo"]):not(.script):not(.sacramento){
+  font-family:"MontserratLocal",sans-serif !important;
+}
+
+/* Auch Formulare, Picker, Buttons und dynamische Elemente */
+button,
+input,
+textarea,
+select,
+.field,
+.fakeDate,
+.dateButton,
+.timeText,
+.timeInput,
+.noteField,
+.preview,
+.btn,
+.typeBtn,
+.customDateBox,
+.customDateBox *,
+.customTimeBox,
+.customTimeBox *,
+.holidayOverlay,
+.holidayOverlay *,
+.nameSuggest,
+.nameSuggest *,
+.alertBox,
+.alertBox *,
+.actionBox,
+.actionBox *,
+.pinLock,
+.pinLock *,
+.loginLock,
+.loginLock *{
+  font-family:"MontserratLocal",sans-serif !important;
+}
+
+/* Logo/Vlora Iseni nicht überschreiben */
+.logo,
+.logo *,
+.loginLogo,
+.pinLogo,
+[class*="logo"],
+[class*="Logo"],
+.script,
+.sacramento{
+  font-family:inherit;
+}
+
+/* Uhrzeit-Roller-Ziffern endgültig Montserrat, gleiche Ziffernbreite */
+.customTimeItem,
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  font-family:"MontserratLocal",sans-serif !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+}
+
+/* Kalender-Ziffern ebenfalls Montserrat */
+.day .num,
+.customDateCell,
+.count,
+.monthTitle,
+.customDateTitle{
+  font-family:"MontserratLocal",sans-serif !important;
+}
+
+
+/* MR BEAUTY FINAL: Uhrzeit-Rad-Ziffern wie Eingabefelder/Vorname */
+.customTimeItem,
+#customHourWheel .customTimeItem,
+#customMinuteWheel .customTimeItem{
+  font-family:"MontserratLocal",sans-serif !important;
+  font-weight:400 !important;
+  font-style:normal !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+  -webkit-font-smoothing:antialiased !important;
+  text-rendering:auto !important;
+}
+
+
+/* MR BEAUTY FINAL: Uhrzeit-Rad Ziffern exakt auf gleicher Breitenlinie */
+.customTimeItem{
+  font-family:"MontserratLocal",sans-serif !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+  text-align:center !important;
+}
+
+.customTimeItem .mrTimeDigit{
+  display:inline-block !important;
+  width:0.62em !important;
+  text-align:center !important;
+  font-family:"MontserratLocal",sans-serif !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  letter-spacing:0 !important;
+}
+
+
+/* MR BEAUTY FINAL: Datum-Popup Zeilenabstand 3px kleiner + gelber Kreis 2px kleiner rund */
+.customDateGrid{
+  row-gap:1px !important;      /* vorher 4px → 3px weniger zwischen Wochenzeilen */
+  column-gap:4px !important;
+}
+
+.customDateCell{
+  height:44px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+  box-sizing:border-box !important;
+}
+
+.customDateCell.selected{
+  width:42px !important;
+  height:42px !important;
+  min-width:42px !important;
+  min-height:42px !important;
+  max-width:42px !important;
+  max-height:42px !important;
+  border-radius:50% !important;
+  justify-self:center !important;
+  align-self:center !important;
+  padding:0 !important;
+  background:#C8CF04 !important;
+  color:#000 !important;
+}
+
+
+/* tweak calendar spacing */
+.customWeekdays{margin-bottom:5px!important;}
+.customDateGrid{row-gap:0px!important;column-gap:4px!important;}
+.customDateCell{height:41px!important;width:41px!important;margin:0 auto!important;}
+.customDateCell.selected{
+width:39px!important;
+height:39px!important;
+min-width:39px!important;
+min-height:39px!important;
+max-width:39px!important;
+max-height:39px!important;
+border-radius:50%!important;
+}
+
+
+/* MR BEAUTY FINAL: Abbrechen-Buttons kürzer/flacher + Bestätigungsbutton eckiger */
+.customDateActions,
+.customTimeActions{
+  grid-template-columns: minmax(0, 1fr) 58px !important;
+  gap: 26px !important;
+  align-items: center !important;
+}
+
+.customCancel,
+.customTimeReset{
+  width: 100% !important;
+  max-width: 230px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  border-radius: 14px !important;
+  padding: 0 !important;
+  justify-self: start !important;
+  background: #2c2c2e !important;
+  color: #fff !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+}
+
+.customOk,
+.customTimeOk{
+  width: 58px !important;
+  height: 58px !important;
+  min-width: 58px !important;
+  min-height: 58px !important;
+  max-width: 58px !important;
+  max-height: 58px !important;
+  border-radius: 42% !important;
+  background: #C8CF04 !important;
+  color: #000 !important;
+  padding: 0 !important;
+  justify-self: end !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 0 #000 !important;
+}
+
+
+/* FINAL: runder gelber Button + dünner iOS-Haken */
+.customOk,
+.customTimeOk{
+  border-radius:50% !important;
+  width:58px !important;
+  height:58px !important;
+  min-width:58px !important;
+  min-height:58px !important;
+  max-width:58px !important;
+  max-height:58px !important;
+  font-size:0 !important;
+  position:relative !important;
+}
+.customOk::before,
+.customTimeOk::before{
+  content:"✓";
+  font-size:30px !important;
+  font-weight:300 !important;
+  color:#000 !important;
+  line-height:1;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+
+
+/* popup weekday/date alignment fix */
+.customWeekdays,.customDateGrid{width:100%!important;display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important}
+.customWeekdays{justify-items:center!important}
+.customDateGrid{justify-items:center!important}
+.customDateCell{width:36px!important;margin:0 auto!important}
+
+
+/* FINAL ONLY POPUP-KALENDER: Kreise 3px kleiner und exakt rund */
+.customDateGrid .customDateCell.selected,
+.customDateGrid .customDateCell.today{
+  width:33px !important;
+  height:33px !important;
+  min-width:33px !important;
+  min-height:33px !important;
+  max-width:33px !important;
+  max-height:33px !important;
+  aspect-ratio:1 / 1 !important;
+  border-radius:50% !important;
+  padding:0 !important;
+  margin:auto !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:33px !important;
+  flex:0 0 33px !important;
+  transform:none !important;
+}
+
+.customDateGrid .customDateCell.selected{
+  background:#C8CF04 !important;
+  color:#000 !important;
+  box-shadow:none !important;
+}
+
+.customDateGrid .customDateCell.today:not(.selected){
+  background:transparent !important;
+  color:#fff !important;
+  box-shadow:inset 0 0 0 2px #C8CF04 !important;
+}
+
+
+/* FINAL FIX NUR POPUP-KALENDER-PFEILE: weiss und optisch mittig */
+.customDateHeader .customDateNav{
+  color:transparent !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.customDateHeader .customDateNav::before{
+  color:#FFFFFF !important;
+  font-size:34px !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+  display:block !important;
+  transform:translateY(-3px) !important;
+}
+
+.customDateHeader .customDateNav:first-child::before{
+  content:"‹" !important;
+}
+
+.customDateHeader .customDateNav:last-child::before{
+  content:"›" !important;
+}
+
+
+/* FINAL ONLY ÜBERSICHT-KALENDER-PFEILE: etwas höher und fetter */
+.monthBar .navBtn{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  line-height:1 !important;
+  font-size:0 !important;
+  font-weight:800 !important;
+  color:transparent !important;
+}
+
+.monthBar .navBtn::before{
+  display:block !important;
+  color:#fff !important;
+  font-size:30px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  transform:translateY(-3px) !important;
+}
+
+.monthBar .navBtn:first-child::before{
+  content:"‹" !important;
+}
+
+.monthBar .navBtn:last-child::before{
+  content:"›" !important;
+}
+
+
+/* Cursor fix */
+.field, .noteField, .loginInput{
+  caret-color:#C8CF04 !important;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="loginLock" class="loginLock">
+  <div class="loginBox">
+    <img src="logo.png" class="loginLogo" alt="MR BEAUTY">
+
+    <div class="loginCard">
+      <h1 class="loginTitle">Terminbuch</h1>
+      <p class="loginSub">Bitte melde dich an, um fortzufahren.</p>
+
+      <label class="loginLabel" for="loginEmail">E-Mail</label>
+      <div class="loginFieldWrap">
+        <input id="loginEmail" class="loginInput" type="email" inputmode="email" autocomplete="username" placeholder="Deine E-Mail">
+      </div>
+
+      <label class="loginLabel" for="loginPassword">Passwort</label>
+      <div class="loginFieldWrap">
+        <input id="loginPassword" class="loginInput" type="password" autocomplete="current-password" placeholder="Dein Passwort">
+        <button type="button" class="loginEye" onclick="toggleLoginPassword()" aria-label="Passwort anzeigen">
+          <svg class="eyeIcon eyeHidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.8 12s3.8-6 10.2-6 10.2 6 10.2 6-3.8 6-10.2 6S1.8 12 1.8 12z"></path><circle cx="12" cy="12" r="3"></circle><path d="M4 20L20 4"></path></svg>
+        </button>
+      </div>
+
+      <div class="loginRow">
+        <button type="button" class="forgotBtn" onclick="forgotPassword()">Passwort vergessen?</button>
+        <div id="forgotMsg" class="forgotMsg"></div>
+        <button type="button" id="rememberBox" class="rememberBox" onclick="toggleRemember()">
+          <span>Eingeloggt bleiben</span>
+          <span class="rememberCheck">✓</span>
+        </button>
+      </div>
+
+      <button type="button" id="loginBtn" class="loginBtn" onclick="loginWithFirebase()">Einloggen</button>
+      <div id="loginError" class="loginError"></div>
+    </div>
+
+    <div class="loginHint">
+      <span class="loginShield">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </span>
+      <span>Nur autorisierte Personen haben Zugriff.</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="top">
+<div class="header">
+<button class="logoutTop" onclick="logoutFirebase()">Abmelden</button>
+<div class="title">Terminbuch</div>
+<img src="logo.png" class="logo">
+</div>
+
+<div class="statsGrid">
+<div class="statCard openStat">
+<div class="statHead">
+<span class="statDot yellowDot"></span>
+<div class="statTitle">Offene Termine</div>
+</div>
+<div class="statLine">
+<span>Ganzes Jahr:</span>
+<span id="openYearTotal" class="statValue statYellow">0</span>
+</div>
+<div class="statLine">
+<span id="openMonthLabel">Monat Mai:</span>
+<span id="openMonthTotal" class="statValue statYellow">0</span>
+</div>
+</div>
+
+<div class="statCard doneStat">
+<div class="statHead">
+<span class="statDot greenDot"></span>
+<div class="statTitle">Erledigte Termine</div>
+</div>
+<div class="statLine">
+<span>Ganzes Jahr:</span>
+<span id="doneYearTotal" class="statValue statGreen">0</span>
+</div>
+<div class="statLine">
+<span id="doneMonthLabel">Monat Mai:</span>
+<span id="doneMonthTotal" class="statValue statGreen">0</span>
+</div>
+</div>
+</div>
+
+<div class="monthBar">
+<button class="navBtn" onclick="prevMonth()">‹</button>
+<div id="monthTitle" class="monthTitle">Monat</div>
+<button class="navBtn" onclick="nextMonth()">›</button>
+</div>
+</div>
+
+<div class="content">
+<div class="weekdays">
+<div>Mo</div><div>Di</div><div>Mi</div><div>Do</div><div>Fr</div><div>Sa</div><div>So</div>
+</div>
+
+<div id="calendar" class="calendar"></div>
+
+<div class="detailBox">
+<div class="detailHeader">
+<div id="selectedTitle">Heute</div>
+<div id="selectedCount">0</div>
+</div>
+<div id="dayList"></div>
+</div>
+
+</div>
+
+<div class="bottom">
+<button onclick="openForm()" style="background:#C8CF04;color:#000;font-weight:600;">+ Termin eintragen</button>
+<button type="button" class="holidayManageBtn" onclick="openHolidayManager()">🌴 Ferien verwalten</button>
+</div>
+
+<div id="form" class="form">
+
+<div class="formTop">
+<div class="formHeader">
+<button class="closeBtn" onclick="closeForm()">×</button>
+<div class="formTitle">Neuer Termin</div>
+</div>
+
+<div class="nameRow">
+<input id="vorname" class="field" placeholder="Vorname" autocomplete="given-name" autocorrect="off" spellcheck="false" oninput="resetState();updatePreview()">
+<input id="nachname" class="field" placeholder="Nachname" autocomplete="family-name" autocorrect="off" spellcheck="false" oninput="this.classList.remove('error');resetState();updatePreview()">
+</div>
+<div id="nameSuggest" class="nameSuggest"></div>
+
+<div class="nameRow">
+<div id="datumBox" class="fakeDate dateButton">
+<span id="datumAnzeige">Datum</span>
+</div>
+<input id="datumPicker" type="hidden">
+<div id="zeitBox" class="timeWrap" onclick="openCustomTimePicker()">
+<div id="zeitText" class="timeText empty">Uhrzeit</div>
+<input id="zeit" class="timeInput" type="hidden" onchange="resetState();updatePreview();updateZeitText()">
+</div>
+</div>
+
+<input id="datum" type="hidden">
+
+<div class="typeRow">
+<div id="beautyType" class="typeBtn active beauty" onclick="setTerminArt('beauty')">
+<span class="typeIcon">●</span><span>MR Beauty Termin</span>
+</div>
+<div id="privateType" class="typeBtn private" onclick="setTerminArt('private')">
+<span class="typeIcon">●</span><span>Privater Termin</span>
+</div>
+</div>
+</div>
+
+<div class="formContent">
+<div id="serviceSection">
+<div id="buttons" class="grid">
+<div class="btn" onclick="toggleService(this)" data-name="Gel-Neumodellage mit Tips">Gel-Neumodellage mit Tips</div>
+<div class="btn" onclick="toggleService(this)" data-name="Gel-Neumodellage Naturnagel">Gel-Neumodellage Naturnagel</div>
+<div class="btn" onclick="toggleService(this)" data-name="Auffüllen Natur">Auffüllen Natur</div>
+<div class="btn" onclick="toggleService(this)" data-name="Farbe">Farbe</div>
+<div class="btn" onclick="toggleService(this)" data-name="French">French</div>
+<div class="btn" onclick="toggleService(this)" data-name="Chrom">Chrom</div>
+<div class="btn" onclick="toggleService(this)" data-name="Reparatur pro Nagel">Reparatur pro Nagel</div>
+<div class="btn" onclick="toggleService(this)" data-name="Entfernen von Gel oder Acryl">Entfernen von Gel oder Acryl</div>
+<div class="btn" onclick="toggleService(this)" data-name="Augenbrauen zupfen">Augenbrauen zupfen</div>
+<div class="btn" onclick="toggleService(this)" data-name="Augenbrauen färben">Augenbrauen färben</div>
+<div class="btn" onclick="toggleService(this)" data-name="Wimpernlifting & färben">Wimpernlifting & färben</div>
+<div class="btn" onclick="toggleService(this)" data-name="Wimpernverlängerung Volumen">Wimpernverlängerung Volumen</div>
+<div class="btn" onclick="toggleService(this)" data-name="Wimpern Volumen auffüllen">Wimpern Volumen auffüllen</div>
+<div class="btn" onclick="toggleService(this)" data-name="Wimpernverlängerung Natur">Wimpernverlängerung Natur</div>
+<div class="btn" onclick="toggleService(this)" data-name="Wimpern Natur auffüllen">Wimpern Natur auffüllen</div>
+<div class="btn" onclick="toggleService(this)" data-name="Wimpern entfernen">Wimpern entfernen</div>
+</div>
+</div>
+
+<div id="privateNoteWrap" class="privateNoteWrap" style="display:none;">
+<textarea id="privateNote" class="noteField" placeholder="Notiz (Optional)&#10;&#10;" oninput="resetState();updatePreview()"></textarea>
+</div>
+</div>
+
+<div class="formBottom">
+<div id="preview" class="preview">Noch kein Termin eingetragen</div>
+<button id="saveBtn" onclick="saveTermin()">Termin speichern</button>
+
+</div>
+
+</div>
+
+
+<div id="customAlert" class="alertOverlay">
+<div class="alertBox">
+<div class="alertTitle">Bereits reserviert</div>
+<div id="alertMsg" class="alertText"></div>
+<button class="alertBtn" onclick="closeAlert()">OK</button>
+</div>
+</div>
+
+
+<div id="actionOverlay" class="actionOverlay">
+<div class="actionBox">
+<div class="actionTitle">Termin auswählen</div>
+<div id="actionSub" class="actionSub"></div>
+<button class="actionBtn" onclick="editSelectedTermin()">Verschieben</button>
+<button class="actionBtn actionDanger" onclick="deleteSelectedTermin()">Stornieren</button>
+<button class="actionBtn actionCancel" onclick="closeActionPopup()">Abbrechen</button>
+</div>
+</div>
+
+
+<div id="customDateOverlay" class="customDateOverlay">
+  <div class="customDateBox">
+    <div class="customDateHeader">
+      <button type="button" class="customDateNav" onclick="customDatePrev()">‹</button>
+      <div id="customDateTitle" class="customDateTitle">Monat</div>
+      <button type="button" class="customDateNav" onclick="customDateNext()">›</button>
+    </div>
+    <div class="customWeekdays">
+      <div>Mo</div><div>Di</div><div>Mi</div><div>Do</div><div>Fr</div><div>Sa</div><div>So</div>
+    </div>
+    <div id="customDateGrid" class="customDateGrid"></div>
+    <div class="customDateActions">
+      <button type="button" class="customCancel" onclick="customDateClose()">Abbrechen</button>
+      <button type="button" class="customOk" onclick="customDateConfirm()">✓</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="customTimeOverlay" class="customTimeOverlay" onclick="customTimeBackdrop(event)">
+  <div class="customTimeBox" onclick="event.stopPropagation()">
+    <div class="customTimeWheelArea">
+      <div class="customTimeHighlight"></div>
+      <div id="customHourWheel" class="customTimeWheel"></div>
+      <div id="customMinuteWheel" class="customTimeWheel"></div>
+    </div>
+    <div class="customTimeActions">
+      <button type="button" class="customTimeReset" onclick="customTimeReset()">Abbrechen</button>
+      <button type="button" class="customTimeOk" onclick="customTimeConfirm()">✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="holidayOverlay" class="holidayOverlay">
+  <div class="holidayBox">
+    <div class="holidayHeader">
+      <button type="button" class="holidayCloseBtn" onclick="closeHolidayManager()">×</button>
+      <div class="holidayTitle">Ferien</div>
+    </div>
+    <input id="holidayEditId" type="hidden">
+    <div class="holidayDateRow">
+      <div class="holidayFieldGroup">
+        <div class="holidayLabel">Von</div>
+        <input id="holidayStart" class="holidayInput" type="date">
+      </div>
+      <div class="holidayFieldGroup">
+        <div class="holidayLabel">Bis</div>
+        <input id="holidayEnd" class="holidayInput" type="date">
+      </div>
+    </div>
+    <div class="holidayActions">
+      <button type="button" class="holidaySave" onclick="saveHolidayRange()">Speichern</button>
+    </div>
+    <div id="holidayList" class="holidayList"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+
+
+/* NAME-VORSCHLÄGE */
+const NAME_SEED_PAIRS = [["Bleta", "Bislimi"], ["Jessica", "Koller"], ["Arbesa", "Dermaku"], ["Aleksandra", "Ristov"], ["Kiara", "Jolidon"], ["Christina", "Kunz"], ["Angeline", "Reichenbach"], ["Vlora", "Sejdiju"], ["Blenda", "Memeti"], ["Loresa", "Dibrani"], ["Melanie", "Pereira"], ["Marigona", "Memeti"], ["Tania", "Peixoto"], ["Chiara", "Sousa"], ["Edyta", "Millrr"], ["Ylza", "Zhuniqi"], ["Rosa", "Cubila"], ["Ledijana", "Qerime"], ["Tamara", "Radovanovic"], ["Azra", "Gashi"], ["Mia", "Reichenbach"], ["Albina", "Fetiu"], ["Yllka", "Ismajli"], ["Anjesa", "Kerqeli"], ["Nora", "Memeti"], ["Viona", "Isufi"], ["Ana", "Tschudi"], ["Jessica", "Portugal"], ["Francy", "Zapata"], ["Minire", "Ibrahimi"], ["Rina", "Zogaj"], ["Ledijana", "Cerime"], ["Sara", "Zahiri"], ["Ramona", "Ott"], ["Sadete", "Oosmani"], ["Ornela", "Burnazi"], ["Saurelis", "Rodriguez"], ["Edyta", "Miller"], ["Rosario", "Cubila"], ["Diana", "Akinyi"], ["Patricia", "Mejia"], ["Sara", "Abdel"], ["Micaela", "Nunes"], ["Albnora", "Zulali"], ["Ardita", "Maliqi"], ["Gorica", "Kerkez"], ["Ledejna", "Cerimi"], ["Leondina", "Ljutvijoski"], ["Janine", "Novak"], ["Ademi", "Zehra"], ["Arza", "Gashi"], ["Merjem", "Zendeli"], ["Armire", "Sylaj"], ["Ayse", "Nur"], ["Karin", "Roman"], ["Naze", "Zyberi"], ["Eriona", "Berisha"], ["Majlinda", "Murati"], ["Mis", "Reichenbach"]];
+const NAME_STORE_KEY = "mrbeauty_name_pairs_v2";
+const NAME_DELETED_KEY = "mrbeauty_name_deleted_v1";
+
+/* GEMEINSAME FIREBASE-NAMEN FÜR KASSE + TERMINBUCH */
+const SHARED_NAME_COLLECTION = "mrbeauty_shared_name_pairs";
+const SHARED_NAME_DELETE_COLLECTION = "mrbeauty_shared_name_deleted";
+let firebaseNamePairs = [];
+let firebaseDeletedSuggestions = {first:[], last:[]};
+let sharedNameSyncStarted = false;
+
+let activeNameField = null;
+let nameHideTimer = null;
+
+function nameClean(v){ return (v || "").trim().replace(/\s+/g," "); }
+function nameKey(v){ return nameClean(v).toLocaleLowerCase("de-CH"); }
+function nameDocId(v){ return encodeURIComponent(nameKey(v)).replace(/\./g,"%2E"); }
+function namePairDocId(first,last){ return nameDocId(first)+"__"+nameDocId(last); }
+function nameEscape(v){
+  return String(v || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+function uniqueNameList(list){
+  const seen = new Set();
+  const out = [];
+  list.forEach(v=>{
+    v = nameClean(v);
+    if(!v) return;
+    const k = nameKey(v);
+    if(seen.has(k)) return;
+    seen.add(k);
+    out.push(v);
+  });
+  return out.sort((a,b)=>a.localeCompare(b,"de-CH"));
+}
+
+function getStoredPairs(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(NAME_STORE_KEY) || "[]");
+    return Array.isArray(raw) ? raw.filter(p=>Array.isArray(p) && p.length>=2) : [];
+  }catch(e){ return []; }
+}
+
+function getDeletedSuggestions(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(NAME_DELETED_KEY) || "{}");
+    return raw && typeof raw === "object" ? raw : {first:[], last:[]};
+  }catch(e){ return {first:[], last:[]}; }
+}
+
+function isSuggestionDeleted(type, value){
+  const key = nameKey(value);
+  const local = getDeletedSuggestions();
+  const localList = Array.isArray(local[type]) ? local[type] : [];
+  const firebaseList = Array.isArray(firebaseDeletedSuggestions[type]) ? firebaseDeletedSuggestions[type] : [];
+  return localList.includes(key) || firebaseList.includes(key);
+}
+
+function getAllNamePairs(){
+  const all = NAME_SEED_PAIRS.concat(getStoredPairs()).concat(firebaseNamePairs);
+  const seen = new Set();
+  const out = [];
+  all.forEach(p=>{
+    const f = nameClean(p[0]);
+    const l = nameClean(p[1]);
+    if(!f || !l) return;
+    if(isSuggestionDeleted("first", f) || isSuggestionDeleted("last", l)) return;
+    const k = nameKey(f)+"|"+nameKey(l);
+    if(seen.has(k)) return;
+    seen.add(k);
+    out.push([f,l]);
+  });
+  return out;
+}
+
+async function firebaseRemoveDeletedMarker(type, value){
+  try{
+    if(typeof db === "undefined") return;
+    const key = nameKey(value);
+    if(!key) return;
+    const id = type+"_"+nameDocId(value);
+    await db.collection(SHARED_NAME_DELETE_COLLECTION).doc(id).delete().catch(()=>{});
+  }catch(e){}
+}
+
+async function firebaseSaveNamePair(first,last){
+  try{
+    if(typeof db === "undefined") return;
+    first = nameClean(first); last = nameClean(last);
+    if(!first || !last) return;
+    await firebaseRemoveDeletedMarker("first", first);
+    await firebaseRemoveDeletedMarker("last", last);
+    await db.collection(SHARED_NAME_COLLECTION).doc(namePairDocId(first,last)).set({
+      firstName:first,
+      lastName:last,
+      firstKey:nameKey(first),
+      lastKey:nameKey(last),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    }, {merge:true});
+  }catch(e){
+    console.warn("Name konnte nicht in Firebase gespeichert werden:", e);
+  }
+}
+
+function saveNamePair(first,last){
+  first = nameClean(first); last = nameClean(last);
+  if(!first || !last) return;
+
+  const d = getDeletedSuggestions();
+  d.first = (Array.isArray(d.first) ? d.first : []).filter(v=>v !== nameKey(first));
+  d.last = (Array.isArray(d.last) ? d.last : []).filter(v=>v !== nameKey(last));
+  localStorage.setItem(NAME_DELETED_KEY, JSON.stringify(d));
+
+  const pairs = getAllNamePairs();
+  if(!pairs.some(p=>nameKey(p[0])===nameKey(first) && nameKey(p[1])===nameKey(last))){
+    const stored = getStoredPairs();
+    stored.push([first,last]);
+    localStorage.setItem(NAME_STORE_KEY, JSON.stringify(stored));
+  }
+
+  firebaseSaveNamePair(first,last);
+}
+
+function saveCurrentNamePair(){
+  const vor = document.getElementById("vorname");
+  const nach = document.getElementById("nachname");
+  if(vor && nach) saveNamePair(vor.value, nach.value);
+}
+
+async function firebaseDeleteSuggestion(type, value){
+  try{
+    if(typeof db === "undefined") return;
+    value = nameClean(value);
+    const key = nameKey(value);
+    if(!key) return;
+
+    await db.collection(SHARED_NAME_DELETE_COLLECTION).doc(type+"_"+nameDocId(value)).set({
+      type:type,
+      value:value,
+      key:key,
+      deleted:true,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    }, {merge:true});
+
+    const field = type === "first" ? "firstKey" : "lastKey";
+    const snap = await db.collection(SHARED_NAME_COLLECTION).where(field, "==", key).get();
+    const batch = db.batch();
+    snap.forEach(doc=>batch.delete(doc.ref));
+    if(!snap.empty) await batch.commit();
+  }catch(e){
+    console.warn("Name konnte nicht in Firebase gelöscht werden:", e);
+  }
+}
+
+function removeSuggestion(type, value){
+  value = nameClean(value);
+  if(!value) return;
+  const key = nameKey(value);
+
+  const stored = getStoredPairs().filter(p=>{
+    if(type === "first") return nameKey(p[0]) !== key;
+    return nameKey(p[1]) !== key;
+  });
+  localStorage.setItem(NAME_STORE_KEY, JSON.stringify(stored));
+
+  const d = getDeletedSuggestions();
+  const list = Array.isArray(d[type]) ? d[type] : [];
+  if(!list.includes(key)) list.push(key);
+  d[type] = list;
+  localStorage.setItem(NAME_DELETED_KEY, JSON.stringify(d));
+
+  firebaseDeleteSuggestion(type, value);
+  updateNameSuggestions(true);
+}
+
+function getNameSuggestions(fieldId){
+  const vor = document.getElementById("vorname");
+  const nach = document.getElementById("nachname");
+  const input = document.getElementById(fieldId);
+  const q = nameClean(input ? input.value : "");
+  const qk = nameKey(q);
+  const pairs = getAllNamePairs();
+  let values = [];
+
+  if(fieldId === "nachname"){
+    const first = nameKey(vor ? vor.value : "");
+    if(!q && first) values = pairs.filter(p=>nameKey(p[0])===first).map(p=>p[1]);
+    else if(q) values = pairs.map(p=>p[1]).filter(v=>nameKey(v).startsWith(qk));
+  }else{
+    const last = nameKey(nach ? nach.value : "");
+    if(!q && last) values = pairs.filter(p=>nameKey(p[1])===last).map(p=>p[0]);
+    else if(q) values = pairs.map(p=>p[0]).filter(v=>nameKey(v).startsWith(qk));
+  }
+  return uniqueNameList(values).slice(0,20);
+}
+
+function positionNameSuggest(input){
+  const box = document.getElementById("nameSuggest");
+  if(!box || !input) return;
+  const r = input.getBoundingClientRect();
+  box.style.left = Math.round(r.left) + "px";
+  box.style.top = Math.round(r.bottom + 6) + "px";
+  box.style.width = Math.round(r.width) + "px";
+}
+
+function hideNameSuggestions(){
+  const box = document.getElementById("nameSuggest");
+  if(box){
+    box.classList.remove("show");
+    box.innerHTML = "";
+  }
+}
+
+function updateNameSuggestions(force){
+  if(!activeNameField) return;
+  const input = document.getElementById(activeNameField);
+  const box = document.getElementById("nameSuggest");
+  if(!input || !box) return;
+  const items = getNameSuggestions(activeNameField);
+  if(!items.length){ hideNameSuggestions(); return; }
+  positionNameSuggest(input);
+  const type = activeNameField === "vorname" ? "first" : "last";
+  box.innerHTML = items.map(v=>`<div class="nameSuggestItem" data-value="${nameEscape(v)}" data-type="${type}"><div class="nameSuggestDelete">×</div><div class="nameSuggestText">${nameEscape(v)}</div></div>`).join("");
+  box.classList.add("show");
+}
+
+function initSharedNameSync(){
+  if(sharedNameSyncStarted) return;
+  if(typeof db === "undefined") return;
+  sharedNameSyncStarted = true;
+
+  try{
+    db.collection(SHARED_NAME_COLLECTION).onSnapshot(snap=>{
+      const list = [];
+      snap.forEach(doc=>{
+        const d = doc.data() || {};
+        const f = nameClean(d.firstName);
+        const l = nameClean(d.lastName);
+        if(f && l) list.push([f,l]);
+      });
+      firebaseNamePairs = list;
+      if(activeNameField) updateNameSuggestions(true);
+    }, err=>console.warn("Firebase Namen laden fehlgeschlagen:", err));
+  }catch(e){}
+
+  try{
+    db.collection(SHARED_NAME_DELETE_COLLECTION).onSnapshot(snap=>{
+      const deleted = {first:[], last:[]};
+      snap.forEach(doc=>{
+        const d = doc.data() || {};
+        if(d.deleted === false) return;
+        const type = d.type === "last" ? "last" : "first";
+        const key = d.key || nameKey(d.value);
+        if(key && !deleted[type].includes(key)) deleted[type].push(key);
+      });
+      firebaseDeletedSuggestions = deleted;
+      if(activeNameField) updateNameSuggestions(true);
+    }, err=>console.warn("Firebase gelöschte Namen laden fehlgeschlagen:", err));
+  }catch(e){}
+}
+
+function setupNameSuggestions(){
+  initSharedNameSync();
+
+  const box = document.getElementById("nameSuggest");
+  const fields = [document.getElementById("vorname"), document.getElementById("nachname")].filter(Boolean);
+  fields.forEach(input=>{
+    input.setAttribute("autocorrect","off");
+    input.setAttribute("spellcheck","false");
+    input.addEventListener("focus", ()=>{
+      activeNameField = input.id;
+      clearTimeout(nameHideTimer);
+      updateNameSuggestions(false);
+    });
+    input.addEventListener("input", ()=>{
+      activeNameField = input.id;
+      updateNameSuggestions(true);
+    });
+    input.addEventListener("blur", ()=>{
+      nameHideTimer = setTimeout(hideNameSuggestions, 180);
+    });
+  });
+  window.addEventListener("resize", ()=>{
+    if(activeNameField) positionNameSuggest(document.getElementById(activeNameField));
+  });
+
+  if(!box) return;
+  box.addEventListener("pointerdown", e=>e.preventDefault());
+
+  // Vorschlagfenster bleibt fix; nur die Namen darin scrollen.
+  let suggestStartY = 0;
+  box.addEventListener("touchstart", e=>{
+    if(e.touches && e.touches.length) suggestStartY = e.touches[0].clientY;
+  }, {passive:true});
+  box.addEventListener("touchmove", e=>{
+    if(!e.touches || !e.touches.length) return;
+    const y = e.touches[0].clientY;
+    const dy = y - suggestStartY;
+    suggestStartY = y;
+    const atTop = box.scrollTop <= 0;
+    const atBottom = Math.ceil(box.scrollTop + box.clientHeight) >= box.scrollHeight;
+    if((atTop && dy > 0) || (atBottom && dy < 0)){
+      e.preventDefault();
+    }
+    e.stopPropagation();
+  }, {passive:false});
+
+  box.addEventListener("click", e=>{
+    const del = e.target.closest(".nameSuggestDelete");
+    const item = e.target.closest(".nameSuggestItem");
+    if(!item) return;
+    const value = item.dataset.value || "";
+    if(del){ removeSuggestion(item.dataset.type, value); return; }
+    window.mrLastSuggestChooseAt = Date.now();
+    const input = document.getElementById(activeNameField);
+    if(input){
+      input.value = value;
+      resetState();
+      hideNameSuggestions();
+      activeNameField = null;
+    }
+  });
+
+  let startX = 0;
+  box.addEventListener("touchstart", e=>{
+    const item = e.target.closest(".nameSuggestItem");
+    if(!item) return;
+    startX = e.touches[0].clientX;
+  }, {passive:true});
+  box.addEventListener("touchend", e=>{
+    const item = e.target.closest(".nameSuggestItem");
+    if(!item || !e.changedTouches.length) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    box.querySelectorAll(".nameSuggestItem.reveal").forEach(el=>{ if(el!==item) el.classList.remove("reveal"); });
+    if(dx < -28) item.classList.add("reveal");
+    if(dx > 28) item.classList.remove("reveal");
+  }, {passive:true});
+}
+
+
+let current=new Date();
+let selectedDate=todayString();
+let selectedTerminIndex=null;
+let editTerminIndex=null;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBAyKS6qa1s4p2OQfSxbxGWT5Wkk55mNqU",
+  authDomain: "mr-beauty-test-45dfb.firebaseapp.com",
+  projectId: "mr-beauty-test-45dfb",
+  storageBucket: "mr-beauty-test-45dfb.firebasestorage.app",
+  messagingSenderId: "135767291399",
+  appId: "1:135767291399:web:ea5faf895fb2a9d3e65ca2"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let rememberLogin = true;
+let appStarted = false;
+
+function hideLoginError(){
+  let e=document.getElementById("loginError");
+  if(e) e.classList.remove("show");
+}
+
+function showLoginError(text){
+  let e=document.getElementById("loginError");
+  if(!e) return;
+  e.innerText=text || "Login nicht möglich. Bitte E-Mail und Passwort prüfen.";
+  e.style.background="#3a0707";
+  e.style.color="#ff6b6b";
+  e.classList.add("show");
+}
+
+function toggleRemember(){
+  rememberLogin = !rememberLogin;
+  let b=document.getElementById("rememberBtn");
+  if(b) b.classList.toggle("off", !rememberLogin);
+}
+
+function toggleLoginPassword(){
+  let input=document.getElementById("loginPassword");
+  if(input) input.type = input.type==="password" ? "text" : "password";
+}
+
+async function loginFirebase(){
+  hideLoginError();
+
+  let email=document.getElementById("loginEmail").value.trim();
+  let password=document.getElementById("loginPassword").value;
+
+  if(!email || !password){
+    showLoginError("Bitte E-Mail und Passwort eingeben.");
+    return;
+  }
+
+  try{
+    await auth.setPersistence(rememberLogin ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
+    await auth.signInWithEmailAndPassword(email,password);
+  }catch(e){
+    showLoginError("Login nicht möglich. Bitte E-Mail und Passwort prüfen.");
+  }
+}
+
+async function resetFirebasePassword(){
+  hideLoginError();
+  let email=document.getElementById("loginEmail").value.trim();
+  if(!email){
+    showLoginError("Bitte zuerst E-Mail-Adresse eingeben.");
+    return;
+  }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    let e=document.getElementById("loginError");
+    e.innerText="Passwort-Link wurde gesendet.";
+    e.style.background="#0b2b12";
+    e.style.color="#72e58a";
+    e.classList.add("show");
+  }catch(err){
+    showLoginError("Passwort-Link konnte nicht gesendet werden.");
+  }
+}
+
+async function logoutFirebase(){
+  await auth.signOut();
+}
+
+function showAppAfterLogin(){
+  document.getElementById("loginLock").style.display="none";
+  document.querySelector(".top").style.display="block";
+  document.querySelector(".content").style.display="block";
+  document.querySelector(".bottom").style.display="block";
+  if(!appStarted){
+    appStarted=true;
+    renderCalendar();
+    window.mrbeautyReadyForRefresh=true;
+    setInterval(renderCalendar,30000);
+    startCloudSync();
+  }
+}
+
+function showLoginOnly(){
+  document.getElementById("loginLock").style.display="flex";
+  document.querySelector(".top").style.display="none";
+  document.querySelector(".content").style.display="none";
+  document.querySelector(".bottom").style.display="none";
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  setupNameSuggestions();
+  hideLoginError();
+  let email=document.getElementById("loginEmail");
+  let pass=document.getElementById("loginPassword");
+  if(email) email.addEventListener("input", hideLoginError);
+  if(pass) pass.addEventListener("input", hideLoginError);
+});
+
+
+auth.onAuthStateChanged(function(user){
+  if(user){
+    hideLoginError();
+    showAppAfterLogin();
+  }else{
+    showLoginOnly();
+  }
+});
+
+const termineCollection = db.collection("termine");
+let cloudFirstSnapshot = true;
+
+function cloudCleanTermin(t){
+let copy={...t};
+delete copy._id;
+return copy;
+}
+
+async function cloudAddTermin(t){
+let ref=await termineCollection.add(cloudCleanTermin(t));
+return ref.id;
+}
+
+async function cloudSaveTermin(t){
+if(t._id){
+await termineCollection.doc(t._id).set(cloudCleanTermin(t));
+return t._id;
+}
+return await cloudAddTermin(t);
+}
+
+async function cloudDeleteTermin(t){
+if(t && t._id){
+await termineCollection.doc(t._id).delete();
+}
+}
+
+function startCloudSync(){
+termineCollection.onSnapshot(async (snapshot)=>{
+try{
+if(cloudFirstSnapshot && snapshot.empty){
+let local=getList();
+if(local.length>0){
+for(let item of local){
+if(!item._id){
+let id=await cloudAddTermin(item);
+item._id=id;
+}
+}
+setList(local);
+cloudFirstSnapshot=false;
+return;
+}
+}
+cloudFirstSnapshot=false;
+let liste=[];
+snapshot.forEach((doc)=>{
+liste.push({_id:doc.id,...doc.data()});
+});
+liste.sort((a,b)=>{
+let d=(a.datum||"").localeCompare(b.datum||"");
+if(d!==0) return d;
+return (a.zeit||"").localeCompare(b.zeit||"");
+});
+setList(liste);
+renderCalendar();
+}catch(e){
+showAlert("Cloud Fehler beim Laden. Bitte Internet prüfen.");
+}
+},(error)=>{
+showAlert("Cloud Verbindung nicht möglich. Bitte Firebase Regeln/Testmodus prüfen.");
+});
+}
+
+function pad(n){
+return String(n).padStart(2,"0");
+}
+
+function dateString(d){
+return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+}
+
+function todayString(){
+let d=new Date();
+return dateString(d);
+}
+
+function swissDate(value){
+if(!value) return "";
+let p=value.split("-");
+return p[2]+"."+p[1]+"."+p[0];
+}
+
+function getList(){
+return JSON.parse(localStorage.getItem("mrbeauty_termine") || "[]");
+}
+
+function setList(list){
+localStorage.setItem("mrbeauty_termine", JSON.stringify(list));
+
+if(window.mrbeautyReadyForRefresh){
+clearTimeout(window.mrbeautyRefreshTimer);
+window.mrbeautyRefreshTimer=setTimeout(function(){
+renderCalendar();
+},30);
+}
+}
+
+function monthName(date){
+let names=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+return names[date.getMonth()]+" "+date.getFullYear();
+}
+
+
+function currentMinuteStart(){
+let now=new Date();
+now.setSeconds(0,0);
+return now;
+}
+
+function terminDateTime(t){
+return new Date((t.datum || todayString())+"T"+(t.zeit || "00:00")+":00");
+}
+
+function isTerminDone(t){
+return terminDateTime(t) < currentMinuteStart();
+}
+
+function isTerminOpen(t){
+return terminDateTime(t) >= currentMinuteStart();
+}
+
+function isPrivateTermin(t){
+return t && t.art==="private";
+}
+
+function isBeautyTermin(t){
+return !isPrivateTermin(t);
+}
+
+function monthShortName(date){
+return date.toLocaleDateString("de-CH",{month:"long"}).replace(/^./,c=>c.toUpperCase());
+}
+
+function updateStats(){
+let list=getList().filter(isBeautyTermin);
+let nowMinute=currentMinuteStart();
+
+let y=current.getFullYear();
+let m=current.getMonth();
+
+let openYear=list.filter(t=>{
+let dt=terminDateTime(t);
+return dt.getFullYear()===y && dt >= nowMinute;
+}).length;
+
+let openMonth=list.filter(t=>{
+let d=new Date((t.datum || "")+"T12:00:00");
+return d.getFullYear()===y && d.getMonth()===m && terminDateTime(t) >= nowMinute;
+}).length;
+
+let doneYear=list.filter(t=>{
+let dt=terminDateTime(t);
+return dt.getFullYear()===y && dt < nowMinute;
+}).length;
+
+let doneMonth=list.filter(t=>{
+let d=new Date((t.datum || "")+"T12:00:00");
+return d.getFullYear()===y && d.getMonth()===m && terminDateTime(t) < nowMinute;
+}).length;
+
+let month=monthShortName(current);
+
+let openYearEl=document.getElementById("openYearTotal");
+let openMonthEl=document.getElementById("openMonthTotal");
+let doneYearEl=document.getElementById("doneYearTotal");
+let doneMonthEl=document.getElementById("doneMonthTotal");
+let openMonthLabel=document.getElementById("openMonthLabel");
+let doneMonthLabel=document.getElementById("doneMonthLabel");
+
+if(openYearEl) openYearEl.innerText=openYear;
+if(openMonthEl) openMonthEl.innerText=openMonth;
+if(doneYearEl) doneYearEl.innerText=doneYear;
+if(doneMonthEl) doneMonthEl.innerText=doneMonth;
+if(openMonthLabel) openMonthLabel.innerText="Monat "+month+":";
+if(doneMonthLabel) doneMonthLabel.innerText="Monat "+month+":";
+}
+
+function openText(t){
+return "Noch offen";
+}
+
+function renderCalendar(){
+document.getElementById("monthTitle").innerText=monthName(current);
+
+let year=current.getFullYear();
+let month=current.getMonth();
+
+let first=new Date(year,month,1);
+let startOffset=(first.getDay()+6)%7;
+let start=new Date(year,month,1-startOffset);
+
+let list=getList();
+let cal=document.getElementById("calendar");
+cal.innerHTML="";
+
+let weekRows=[];
+for(let w=0; w<6; w++){
+  let maxCount=0;
+  for(let k=0; k<7; k++){
+    let tmp=new Date(start);
+    tmp.setDate(start.getDate()+(w*7+k));
+    let tmpDs=dateString(tmp);
+    let c=list.filter(t=>t.datum===tmpDs).length;
+    if(c>maxCount) maxCount=c;
+  }
+  weekRows[w]=Math.max(1, Math.ceil(Math.min(maxCount,16)/4));
+}
+
+for(let i=0;i<42;i++){
+let d=new Date(start);
+d.setDate(start.getDate()+i);
+let ds=dateString(d);
+
+let dayTerms=list
+.filter(t=>t.datum===ds)
+.sort((a,b)=>(a.zeit || "").localeCompare(b.zeit || ""));
+let count=dayTerms.length;
+
+let div=document.createElement("div");
+div.className="day";
+if(d.getMonth()!==month) div.classList.add("other");
+if(ds===selectedDate) div.classList.add("selected");
+if(ds===todayString()) div.classList.add("today");
+if(typeof mrIsHolidayDate === "function" && mrIsHolidayDate(ds)) div.classList.add("holiday");
+let weekRowCount=weekRows[Math.floor(i/7)] || 1;
+div.classList.add("rowDots"+weekRowCount);
+if(count > 6) div.classList.add("manyDots");
+
+let dots="";
+for(let j=0;j<dayTerms.length;j++){
+let cls=isPrivateTermin(dayTerms[j]) ? "private" : (isTerminDone(dayTerms[j]) ? "done" : "open");
+dots+='<div class="dot '+cls+'"></div>';
+}
+
+div.innerHTML=
+'<div class="num">'+d.getDate()+'</div>'+
+'<div class="dots">'+dots+'</div>'+
+(count>0?'<div class="count">'+count+'</div>':'');
+
+div.onclick=function(){
+selectedDate=ds;
+renderCalendar();
+updateStats();
+renderDay();
+};
+
+cal.appendChild(div);
+}
+
+renderDay();
+}
+
+function renderDay(){
+updateStats();
+document.getElementById("selectedTitle").innerText=swissDate(selectedDate);
+
+let alle=getList();
+let list=alle
+.map((t,index)=>({termin:t,index:index}))
+.filter(item=>item.termin.datum===selectedDate)
+.sort((a,b)=>a.termin.zeit.localeCompare(b.termin.zeit));
+
+document.getElementById("selectedCount").innerText=list.length===1?"1 Termin":list.length+" Termine";
+
+let box=document.getElementById("dayList");
+
+if(list.length===0){
+box.innerHTML='<div class="empty">Noch frei an diesem Tag</div>';
+return;
+}
+
+box.innerHTML=list.map(item=>{
+let t=item.termin;
+let priv=isPrivateTermin(t);
+let done=isTerminDone(t);
+let status=priv ? "Privat" : (done ? "Erledigt" : openText(t));
+let cls=priv ? "private" : (done ? "done" : "open");
+let details=priv ? (t.notiz && t.notiz.trim() ? t.notiz.trim() : "-") : (t.dienstleistungen && t.dienstleistungen.length ? t.dienstleistungen.join(", ") : "-");
+return '<div class="termin '+cls+'" onclick="openActionPopup('+item.index+')">'+
+'<div class="terminName">'+t.zeit+' · '+(t.vorname+' '+(t.name||'')).trim()+'</div>'+
+'<div>'+details+'</div>'+
+'<div class="terminStatus '+cls+'">'+status+'</div>'+
+'</div>';
+}).join("");
+}
+
+function prevMonth(){
+current.setMonth(current.getMonth()-1);
+renderCalendar();
+}
+
+function nextMonth(){
+current.setMonth(current.getMonth()+1);
+renderCalendar();
+}
+
+
+function openActionPopup(index){
+let liste=getList();
+let t=liste[index];
+
+if(!t) return;
+
+selectedTerminIndex=index;
+
+document.getElementById("actionSub").innerText=
+t.zeit+" · "+(t.vorname+" "+(t.name||"")).trim()+"\n"+
+(isPrivateTermin(t) ? (t.notiz && t.notiz.trim() ? t.notiz.trim() : "-") : (t.dienstleistungen && t.dienstleistungen.length ? t.dienstleistungen.join(", ") : "-"));
+
+document.getElementById("actionOverlay").style.display="flex";
+}
+
+function closeActionPopup(){
+document.getElementById("actionOverlay").style.display="none";
+selectedTerminIndex=null;
+}
+
+function editSelectedTermin(){
+if(selectedTerminIndex===null) return;
+
+let liste=getList();
+let t=liste[selectedTerminIndex];
+if(!t) return;
+
+editTerminIndex=selectedTerminIndex;
+closeActionPopup();
+
+document.getElementById("form").style.display="block";
+
+document.getElementById("vorname").value=t.vorname || "";
+document.getElementById("nachname").value=t.name || "";
+document.getElementById("datum").value=t.datum || selectedDate;
+document.getElementById("datumAnzeige").innerText=swissDate(t.datum || selectedDate);
+document.getElementById("zeit").value=t.zeit || "";
+document.getElementById("privateNote").value=t.notiz || "";
+setTerminArt(isPrivateTermin(t) ? "private" : "beauty", true);
+
+document.querySelectorAll(".btn").forEach(b=>{
+let name=b.dataset.name;
+if(t.dienstleistungen && t.dienstleistungen.includes(name)){
+b.classList.add("active");
+}else{
+b.classList.remove("active");
+}
+});
+
+document.getElementById("datumPicker").style.display="none";
+document.getElementById("saveBtn").innerText="Änderung speichern";
+document.getElementById("saveBtn").classList.remove("success");
+
+updatePreview();
+updateZeitText();
+}
+
+async function deleteSelectedTermin(){
+if(selectedTerminIndex===null) return;
+
+let liste=getList();
+let removed=liste[selectedTerminIndex];
+try{
+await cloudDeleteTermin(removed);
+}catch(e){
+showAlert("Cloud Fehler beim Stornieren. Bitte Internet prüfen.");
+return;
+}
+liste.splice(selectedTerminIndex,1);
+setList(liste);
+
+closeActionPopup();
+renderCalendar();
+}
+
+let customDateTemp=null;
+let customDateView=null;
+
+let datePickerOpening=false;
+
+function openDatePicker(e){
+if(e){
+e.preventDefault();
+e.stopPropagation();
+}
+
+customDateTemp=document.getElementById("datum").value || selectedDate || todayString();
+customDateView=new Date(customDateTemp+"T12:00:00");
+renderCustomDatePicker();
+let overlay=document.getElementById("customDateOverlay");
+if(overlay){
+overlay.style.display="flex";
+}
+}
+
+function customDateClose(){
+document.getElementById("customDateOverlay").style.display="none";
+}
+
+function customDatePrev(){
+customDateView.setMonth(customDateView.getMonth()-1);
+renderCustomDatePicker();
+}
+
+function customDateNext(){
+customDateView.setMonth(customDateView.getMonth()+1);
+renderCustomDatePicker();
+}
+
+function renderCustomDatePicker(){
+document.getElementById("customDateTitle").innerText=monthName(customDateView);
+
+let year=customDateView.getFullYear();
+let month=customDateView.getMonth();
+
+let first=new Date(year,month,1);
+let startOffset=(first.getDay()+6)%7;
+let start=new Date(year,month,1-startOffset);
+
+let grid=document.getElementById("customDateGrid");
+grid.innerHTML="";
+
+for(let i=0;i<42;i++){
+let d=new Date(start);
+d.setDate(start.getDate()+i);
+let ds=dateString(d);
+
+let cell=document.createElement("div");
+cell.className="customDateCell";
+if(d.getMonth()!==month) cell.classList.add("other");
+if(ds===customDateTemp) cell.classList.add("selected");
+if(ds===todayString()) cell.classList.add("today");
+cell.innerText=d.getDate();
+
+cell.onclick=function(){
+customDateTemp=ds;
+renderCustomDatePicker();
+};
+
+grid.appendChild(cell);
+}
+}
+
+function customDateConfirm(){
+if(customDateTemp){
+changeDate(customDateTemp);
+}
+customDateClose();
+}
+
+function changeDate(value){
+if(!value) return;
+
+document.getElementById("datum").value=value;
+document.getElementById("datumAnzeige").innerText=swissDate(value);
+
+resetState();
+updatePreview();
+}
+
+
+let currentTerminArt="beauty";
+
+function setTerminArt(art, silent){
+currentTerminArt = art==="private" ? "private" : "beauty";
+let beauty=document.getElementById("beautyType");
+let priv=document.getElementById("privateType");
+let services=document.getElementById("serviceSection");
+let note=document.getElementById("privateNoteWrap");
+if(beauty) beauty.classList.toggle("active", currentTerminArt==="beauty");
+if(priv) priv.classList.toggle("active", currentTerminArt==="private");
+if(services) services.style.display = currentTerminArt==="beauty" ? "block" : "none";
+if(note) note.style.display = currentTerminArt==="private" ? "block" : "none";
+if(currentTerminArt==="private"){
+document.querySelectorAll(".btn.active").forEach(b=>b.classList.remove("active"));
+document.querySelectorAll(".btn.error").forEach(b=>b.classList.remove("error"));
+}
+if(!silent) updatePreview();
+}
+
+function isCurrentPrivate(){return currentTerminArt==="private";}
+
+function openForm(){
+editTerminIndex=null;
+clearForm();
+document.getElementById("datumPicker").style.display="none";
+document.getElementById("form").style.display="block";
+setTerminArt("beauty", true);
+document.getElementById("datum").value=selectedDate;
+document.getElementById("datumAnzeige").innerText=swissDate(selectedDate);
+updatePreview();
+updateZeitText();
+}
+
+function closeForm(){
+document.getElementById("form").style.display="none";
+editTerminIndex=null;
+clearForm();
+}
+
+function toggleService(el){
+el.classList.toggle("active");
+resetState();
+updatePreview();
+}
+
+function selectedServices(){
+return Array.from(document.querySelectorAll(".btn.active")).map(b=>b.dataset.name);
+}
+
+function updateZeitText(){
+let z=document.getElementById("zeit").value;
+let text=document.getElementById("zeitText");
+if(z){
+text.innerText=z;
+text.classList.remove("empty");
+}else{
+text.innerText="Uhrzeit";
+text.classList.add("empty");
+}
+}
+
+function resetState(){
+document.getElementById("vorname").classList.remove("error");
+document.getElementById("nachname").classList.remove("error");
+document.getElementById("datumBox").classList.remove("error");
+document.getElementById("zeitBox").classList.remove("error");
+document.querySelectorAll(".btn").forEach(b=>b.classList.remove("error"));
+
+let btn=document.getElementById("saveBtn");
+btn.innerText="Termin speichern";
+btn.classList.remove("success");
+}
+
+function updatePreview(){
+let vor=document.getElementById("vorname").value.trim();
+let nach=document.getElementById("nachname").value.trim();
+let datum=document.getElementById("datum").value;
+let zeit=document.getElementById("zeit").value;
+let selected=selectedServices();
+let notiz=document.getElementById("privateNote").value.trim();
+
+if(!vor && !nach && !datum && !zeit && selected.length===0 && !notiz){
+document.getElementById("preview").innerText="Noch kein Termin eingetragen";
+return;
+}
+
+let detail=isCurrentPrivate()
+? (notiz ? notiz : "-")
+: (selected.length ? selected.join(", ") : "-");
+
+document.getElementById("preview").innerHTML =
+"<b>"+(vor+" "+nach).trim()+"</b>"+
+(datum ? swissDate(datum) : "Datum fehlt")+" · "+(zeit ? zeit+" Uhr" : "Uhrzeit fehlt")+"<br>"+
+detail;
+}
+
+
+function showAlert(msg){
+document.getElementById("alertMsg").innerText=msg;
+document.getElementById("customAlert").style.display="flex";
+}
+
+function closeAlert(){
+document.getElementById("customAlert").style.display="none";
+}
+
+function timeToMinutes(t){
+let p=t.split(":");
+return parseInt(p[0])*60 + parseInt(p[1]);
+}
+
+function hasConflict(datum, zeit){
+let neu=timeToMinutes(zeit);
+let liste=getList();
+let conflicts=[];
+
+for(let i=0;i<liste.length;i++){
+if(i===editTerminIndex) continue;
+if(liste[i].datum!==datum) continue;
+
+let alt=timeToMinutes(liste[i].zeit);
+let diff=Math.abs(neu-alt);
+
+if(diff < 30){
+conflicts.push(liste[i]);
+}
+}
+
+return conflicts;
+}
+
+async function saveTermin(){
+const selectedDateValue = (document.getElementById("datum")?.value || document.getElementById("datumBox")?.value || "");
+  if(mrIsHolidayDate(selectedDateValue)){
+    mrShowHolidayAlert();
+    return;
+  }
+saveCurrentNamePair();
+let vor=document.getElementById("vorname");
+let nach=document.getElementById("nachname");
+let datum=document.getElementById("datum");
+let zeit=document.getElementById("zeit");
+let selected=isCurrentPrivate() ? [] : selectedServices();
+let notiz=document.getElementById("privateNote").value.trim();
+
+nach.classList.remove("error");
+nach.classList.remove("error");
+let valid=true;
+if(!vor.value.trim()){ vor.classList.add("error"); valid=false; }
+if(!datum.value){ document.getElementById("datumBox").classList.add("error"); valid=false; }
+if(!zeit.value){ document.getElementById("zeitBox").classList.add("error"); valid=false; }
+if(!valid) return;
+
+let conflicts=hasConflict(datum.value, zeit.value);
+if(conflicts.length>0){
+document.getElementById("zeitBox").classList.add("error");
+let text="Folgende Termine sind zu nah:\n\n";
+conflicts.sort((a,b)=>a.zeit.localeCompare(b.zeit)).forEach(t=>{
+text += t.zeit+" · "+(t.vorname+" "+(t.name||"")).trim()+"\n";
+});
+text += "\nBitte mindestens 30 Minuten Abstand einhalten.";
+showAlert(text);
+return;
+}
+
+let termin={
+vorname:vor.value.trim(),
+name:nach.value.trim(),
+datum:datum.value,
+zeit:zeit.value,
+dienstleistungen:selected,
+art:isCurrentPrivate() ? "private" : "beauty",
+notiz:isCurrentPrivate() ? notiz : "",
+erstellt:new Date().toISOString()
+};
+
+let liste=getList();
+
+try{
+if(editTerminIndex!==null){
+let oldTermin=liste[editTerminIndex];
+if(oldTermin && oldTermin._id){
+termin._id=oldTermin._id;
+await cloudSaveTermin(termin);
+}else{
+termin._id=await cloudAddTermin(termin);
+}
+liste[editTerminIndex]=termin;
+editTerminIndex=null;
+}else{
+termin._id=await cloudAddTermin(termin);
+liste.push(termin);
+}
+}catch(e){
+showAlert("Cloud Fehler beim Speichern. Bitte Internet prüfen.");
+return;
+}
+
+setList(liste);
+selectedDate=datum.value;
+current=new Date(datum.value+"T12:00:00");
+renderCalendar();
+
+let btn=document.getElementById("saveBtn");
+btn.innerText="Gespeichert ✓";
+btn.classList.add("success");
+}
+
+function clearForm(){
+editTerminIndex=null;
+document.getElementById("vorname").value="";
+document.getElementById("nachname").value="";
+document.getElementById("zeit").value="";
+document.getElementById("privateNote").value="";
+document.getElementById("datumPicker").style.display="none";
+document.querySelectorAll(".btn").forEach(b=>b.classList.remove("active"));
+setTerminArt("beauty", true);
+resetState();
+updatePreview();
+updateZeitText();
+}
+
+function initForceDateOpen(){
+function insideDateField(e){
+let box=document.getElementById("datumBox");
+let form=document.getElementById("form");
+if(!box || !form || form.style.display!=="block") return false;
+
+let r=box.getBoundingClientRect();
+let p=(e.touches && e.touches[0]) ? e.touches[0] : e;
+let x=p.clientX;
+let y=p.clientY;
+
+return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
+}
+
+function handler(e){
+const suggestBox = document.getElementById("nameSuggest");
+if(
+  document.body.classList.contains("nameSuggestActive") ||
+  document.body.classList.contains("mrSuggestChoosing") ||
+  (suggestBox && suggestBox.classList.contains("show")) ||
+  (Date.now() < (window.mrBlockDateUntil || 0) || Date.now() - (window.mrLastSuggestChooseAt || 0) < 2200)
+){
+  return false;
+}
+if(insideDateField(e)){
+e.preventDefault();
+e.stopPropagation();
+openDatePicker(e);
+return false;
+}
+}
+
+document.addEventListener("touchstart", handler, true);
+document.addEventListener("click", handler, true);
+}
+
+initForceDateOpen();
+
+
+/* === MR BEAUTY CLEAN LOGIN + SUGGEST PATCH === */
+(function(){
+  window.rememberLogin = localStorage.getItem("mrbeauty_terminbuch_remember") !== "0";
+
+  window.applyRememberUI = function(){
+    const box = document.getElementById("rememberBox");
+    if(!box) return;
+    box.classList.toggle("off", !window.rememberLogin);
+  };
+
+  window.toggleRemember = function(){
+    window.rememberLogin = !window.rememberLogin;
+    localStorage.setItem("mrbeauty_terminbuch_remember", window.rememberLogin ? "1" : "0");
+    window.applyRememberUI();
+  };
+
+  function hideForgotMsg(){
+    const msg = document.getElementById("forgotMsg");
+    if(msg){
+      msg.classList.remove("show");
+      msg.textContent = "";
+    }
+  }
+
+  function showForgotMsg(text){
+    const msg = document.getElementById("forgotMsg");
+    if(msg){
+      msg.textContent = text;
+      msg.classList.add("show");
+    }
+  }
+
+  function clearInvalid(){
+    document.getElementById("loginEmail")?.closest(".loginFieldWrap")?.classList.remove("loginInvalid");
+    document.getElementById("loginPassword")?.closest(".loginFieldWrap")?.classList.remove("loginInvalid");
+    const e = document.getElementById("loginError");
+    if(e){
+      e.classList.remove("show");
+      e.innerText = "";
+    }
+    hideForgotMsg();
+  }
+
+  window.toggleLoginPassword = function(){
+    const p = document.getElementById("loginPassword");
+    const btn = document.querySelector(".loginEye");
+    if(!p) return;
+    const show = p.type === "password";
+    p.type = show ? "text" : "password";
+    if(btn){
+      btn.setAttribute("aria-label", show ? "Passwort verbergen" : "Passwort anzeigen");
+      btn.innerHTML = show
+        ? '<svg class="eyeIcon eyeShown" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.8 12s3.8-6 10.2-6 10.2 6 10.2 6-3.8 6-10.2 6S1.8 12 1.8 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>'
+        : '<svg class="eyeIcon eyeHidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.8 12s3.8-6 10.2-6 10.2 6 10.2 6-3.8 6-10.2 6S1.8 12 1.8 12z"></path><circle cx="12" cy="12" r="3"></circle><path d="M4 20L20 4"></path></svg>';
+    }
+  };
+
+  window.loginWithFirebase = async function(){
+    clearInvalid();
+
+    const btn = document.getElementById("loginBtn");
+    const emailEl = document.getElementById("loginEmail");
+    const passEl = document.getElementById("loginPassword");
+    const email = (emailEl?.value || "").trim();
+    const pass = passEl?.value || "";
+
+    if(!email || !pass){
+      if(!email) emailEl?.closest(".loginFieldWrap")?.classList.add("loginInvalid");
+      if(!pass) passEl?.closest(".loginFieldWrap")?.classList.add("loginInvalid");
+      return;
+    }
+
+    try{
+      btn?.classList.add("loading");
+      await auth.setPersistence(
+        window.rememberLogin ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION
+      );
+      await auth.signInWithEmailAndPassword(email, pass);
+    }catch(err){
+      showForgotMsg("Login nicht möglich. Bitte E-Mail und Passwort prüfen.");
+      console.error(err);
+    }finally{
+      btn?.classList.remove("loading");
+    }
+  };
+
+  window.forgotPassword = async function(){
+    const email = (document.getElementById("loginEmail")?.value || "").trim();
+    if(!email){
+      showForgotMsg("Bitte zuerst deine E-Mail-Adresse eingeben.");
+      return;
+    }
+    try{
+      await auth.sendPasswordResetEmail(email);
+      showForgotMsg("E-Mail zum zurücksetzen wurde gesendet.");
+    }catch(err){
+      showForgotMsg("E-Mail konnte nicht gesendet werden. Bitte Adresse prüfen.");
+    }
+  };
+
+  window.logoutFirebase = async function(){
+    await auth.signOut();
+  };
+
+  document.addEventListener("DOMContentLoaded", function(){
+    window.applyRememberUI();
+    const email = document.getElementById("loginEmail");
+    const pass = document.getElementById("loginPassword");
+    [email, pass].forEach(el => el && el.addEventListener("input", clearInvalid));
+    email && email.addEventListener("keydown", e => { if(e.key === "Enter") window.loginWithFirebase(); });
+    pass && pass.addEventListener("keydown", e => { if(e.key === "Enter") window.loginWithFirebase(); });
+  });
+})();
+
+
+</script>
+
+<script>
+
+/* MR Beauty FINAL: saveTermin komplett stabil */
+(function(){
+  function q(id){ return document.getElementById(id); }
+  function v(id){ return (q(id)?.value || "").trim(); }
+  function mark(el,bad){
+    if(!el) return;
+    el.classList.toggle("error", !!bad);
+    el.classList.toggle("mrRequiredError", !!bad);
+  }
+
+  function selectedServicesSafe(){
+    try{
+      if(typeof selectedServices === "function") return selectedServices();
+    }catch(_){}
+    return Array.from(document.querySelectorAll(".services .btn.active,.serviceGrid .btn.active,.btn.active"))
+      .filter(b => !b.classList.contains("typeBtn"))
+      .map(b => b.dataset.name || (b.textContent || "").trim())
+      .filter(Boolean);
+  }
+
+  function dateISOFromCH(s){
+    const m = String(s||"").match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+    if(m) return `${m[3]}-${m[2]}-${m[1]}`;
+    return String(s||"").slice(0,10);
+  }
+
+  function clearRequiredErrors(){
+    ["vorname","datumBox","zeitBox","datum","zeit"].forEach(id=>{
+      const el=q(id);
+      if(el){
+        el.classList.remove("error","mrRequiredError");
+        el.closest(".timeWrap")?.classList.remove("error","mrRequiredError");
+      }
+    });
+  }
+
+  window.saveTermin = async function(){
+    clearRequiredErrors();
+
+    const vor = q("vorname");
+    const nach = q("nachname");
+    const datumHidden = q("datum");
+    const datumBox = q("datumBox");
+    const zeit = q("zeit");
+    const zeitBox = q("zeitBox");
+
+    const vorname = (vor?.value || "").trim();
+    const name = (nach?.value || "").trim();
+    const datum = (datumHidden?.value || datumBox?.value || "").trim();
+    const uhrzeit = (zeit?.value || "").trim();
+
+    let ok = true;
+    if(!vorname){ mark(vor, true); ok = false; }
+    if(!datum){ mark(datumBox || datumHidden, true); ok = false; }
+    if(!uhrzeit){ mark(zeitBox || zeit, true); ok = false; }
+    if(!ok) return;
+
+    if(typeof mrIsHolidayDate === "function" && mrIsHolidayDate(datum)){
+      const msg = typeof mrHolidayWarningText === "function" ? mrHolidayWarningText(datum) : "Dieser Termin liegt in den Ferien. Trotzdem speichern?";
+      if(!confirm(msg)) return;
+    }
+
+    try{
+      if(typeof hasConflict === "function"){
+        const conflicts = hasConflict(datum, uhrzeit);
+        if(conflicts && conflicts.length > 0){
+          mark(zeitBox || zeit, true);
+          let text = "Folgende Termine sind zu nah:\n\n";
+          conflicts.sort((a,b)=>(a.zeit||"").localeCompare(b.zeit||"")).forEach((t,idx)=>{
+            const kundin = ((t.vorname || "") + " " + (t.name || t.nachname || "")).replace(/\s+/g," ").trim() || "-";
+            const uhr = (t.zeit || "-");
+            if(conflicts.length > 1){
+              text += "Kundin: " + kundin + "\n";
+              text += "  Uhrzeit: " + uhr + " Uhr\n";
+            }else{
+              text += "Kundin: " + kundin + "\n";
+              text += "Uhrzeit: " + uhr + " Uhr\n";
+            }
+            if(idx < conflicts.length - 1) text += "\n";
+          });
+          text += "\nBitte mindestens 30 Minuten Abstand einhalten.";
+          if(typeof showAlert === "function") showAlert(text); else alert(text);
+          return;
+        }
+      }
+    }catch(e){ console.warn("Konfliktprüfung übersprungen:", e); }
+
+    let art = "beauty";
+    try{ art = isCurrentPrivate() ? "private" : "beauty"; }catch(_){}
+
+    const termin = {
+      vorname: vorname,
+      name: name,
+      datum: datum,
+      zeit: uhrzeit,          // Excel/Firestore bleibt zeit
+      dienstleistungen: art === "private" ? [] : selectedServicesSafe(),
+      art: art,
+      notiz: art === "private" ? ((q("privateNote")?.value || "").trim()) : "",
+      erstellt: new Date().toISOString()
+    };
+
+    let liste = [];
+    try{ liste = getList(); }catch(_){ liste = []; }
+
+    const btn = q("saveBtn");
+    const oldText = btn ? btn.innerText : "";
+    if(btn){ btn.disabled = true; btn.innerText = "Speichern..."; }
+
+    try{
+      if(typeof editTerminIndex !== "undefined" && editTerminIndex !== null){
+        const old = liste[editTerminIndex];
+        if(old && old._id) termin._id = old._id;
+
+        if(typeof cloudSaveTermin === "function"){
+          termin._id = await cloudSaveTermin(termin);
+        }else if(typeof termineCollection !== "undefined"){
+          if(termin._id) await termineCollection.doc(termin._id).set({...termin, _id: undefined});
+          else termin._id = (await termineCollection.add(termin)).id;
+        }
+
+        liste[editTerminIndex] = termin;
+        editTerminIndex = null;
+      }else{
+        if(typeof cloudAddTermin === "function"){
+          termin._id = await cloudAddTermin(termin);
+        }else if(typeof cloudSaveTermin === "function"){
+          termin._id = await cloudSaveTermin(termin);
+        }else if(typeof termineCollection !== "undefined"){
+          termin._id = (await termineCollection.add(termin)).id;
+        }
+        liste.push(termin);
+      }
+
+      try{ setList(liste); }catch(_){}
+      try{ selectedDate = datum; }catch(_){}
+      try{ current = new Date(dateISOFromCH(datum) + "T12:00:00"); }catch(_){}
+      try{ renderCalendar(); }catch(_){}
+      try{ saveCurrentNamePair(); }catch(_){}
+      try{ clearForm(); }catch(_){}
+
+      if(btn){
+        btn.disabled = false;
+        btn.innerText = "Gespeichert ✓";
+        btn.classList.add("success");
+        setTimeout(()=>{ btn.innerText = "Termin speichern"; btn.classList.remove("success"); }, 1200);
+      }
+    }catch(e){
+      console.error("Firebase Speichern Fehler:", e);
+      if(btn){ btn.disabled = false; btn.innerText = oldText || "Termin speichern"; }
+      const msg = (e && (e.code || e.message)) ? ("Cloud Fehler: " + (e.code || e.message)) : "Cloud Fehler beim Speichern.";
+      if(typeof showAlert === "function") showAlert(msg);
+      else alert(msg);
+    }
+  };
+
+  function installButton(){
+    const btn = q("saveBtn");
+    if(!btn || btn.dataset.finalSaveInstalled === "1") return;
+    btn.dataset.finalSaveInstalled = "1";
+    btn.disabled = false;
+    btn.style.pointerEvents = "auto";
+    btn.onclick = function(e){
+      if(e){ e.preventDefault(); e.stopPropagation(); }
+      window.saveTermin();
+      return false;
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", installButton);
+  setTimeout(installButton,300);
+  setInterval(installButton,1000);
+})();
+
+</script>
+
+<script>
+/* MR BEAUTY FINAL: rote Pflichtfeldrahmen live entfernen, Speichern bleibt unverändert */
+(function(){
+  function q(id){ return document.getElementById(id); }
+  function hasValue(id){ return !!((q(id) && q(id).value) || "").trim(); }
+  function clearError(el){
+    if(!el) return;
+    el.classList.remove("error","mrRequiredError");
+  }
+  function installLiveRequiredClear(){
+    const vor = q("vorname");
+    const datum = q("datum");
+    const datumBox = q("datumBox");
+    const zeit = q("zeit");
+    const zeitBox = q("zeitBox");
+
+    if(vor && vor.dataset.mrLiveRequired !== "1"){
+      vor.dataset.mrLiveRequired = "1";
+      ["input","change","keyup"].forEach(ev=>{
+        vor.addEventListener(ev,()=>{ if(hasValue("vorname")) clearError(vor); },false);
+      });
+    }
+
+    if(datum && datum.dataset.mrLiveRequired !== "1"){
+      datum.dataset.mrLiveRequired = "1";
+      ["input","change"].forEach(ev=>{
+        datum.addEventListener(ev,()=>{ if(hasValue("datum")) clearError(datumBox || datum); },false);
+      });
+    }
+    if(datumBox && datumBox.dataset.mrLiveRequired !== "1"){
+      datumBox.dataset.mrLiveRequired = "1";
+      ["click","touchend"].forEach(ev=>{
+        datumBox.addEventListener(ev,()=>{ setTimeout(()=>{ if(hasValue("datum")) clearError(datumBox); },80); },false);
+      });
+    }
+
+    if(zeit && zeit.dataset.mrLiveRequired !== "1"){
+      zeit.dataset.mrLiveRequired = "1";
+      ["input","change","keyup"].forEach(ev=>{
+        zeit.addEventListener(ev,()=>{ if(hasValue("zeit")) clearError(zeitBox || zeit); },false);
+      });
+    }
+    if(zeitBox && zeitBox.dataset.mrLiveRequired !== "1"){
+      zeitBox.dataset.mrLiveRequired = "1";
+      ["click","touchend"].forEach(ev=>{
+        zeitBox.addEventListener(ev,()=>{ setTimeout(()=>{ if(hasValue("zeit")) clearError(zeitBox); },80); },false);
+      });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", installLiveRequiredClear);
+  setTimeout(installLiveRequiredClear, 300);
+  setInterval(installLiveRequiredClear, 1200);
+})();
+</script>
+
+
+<script>
+/* MR Beauty: Firebase Ferienverwaltung */
+const MR_HOLIDAY_COLLECTION = "mrbeauty_holidays";
+let mrHolidayRanges = [];
+let mrHolidayEditId = null;
+let mrHolidaySyncStarted = false;
+
+function mrIsoFromAnyDate(v){
+  if(!v) return "";
+  const s = String(v).trim();
+  const m = s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if(m) return `${m[3]}-${m[2]}-${m[1]}`;
+  return s.slice(0,10);
+}
+function mrChDate(iso){
+  iso = mrIsoFromAnyDate(iso);
+  if(!iso || iso.length < 10) return "";
+  return iso.slice(8,10)+"."+iso.slice(5,7)+"."+iso.slice(0,4);
+}
+function mrIsHolidayDate(v){
+  const iso = mrIsoFromAnyDate(v);
+  if(!iso) return false;
+  return mrHolidayRanges.some(h => iso >= h.start && iso <= h.end);
+}
+function mrHolidayForDate(v){
+  const iso = mrIsoFromAnyDate(v);
+  return mrHolidayRanges.find(h => iso >= h.start && iso <= h.end) || null;
+}
+function mrHolidayWarningText(v){
+  const h = mrHolidayForDate(v);
+  const title = "Ferien";
+  const range = h ? `\n${mrChDate(h.start)} – ${mrChDate(h.end)}` : "";
+  return `🌴 ${title}${range}\n\nDieser Termin liegt in den Ferien. Trotzdem speichern?`;
+}
+function openHolidayManager(){
+  const ov = document.getElementById("holidayOverlay");
+  if(ov) ov.classList.add("show");
+  setupHolidayDateInputs();
+  clearHolidayForm();
+  renderHolidayList();
+}
+function closeHolidayManager(){
+  const ov = document.getElementById("holidayOverlay");
+  if(ov) ov.classList.remove("show");
+  clearHolidayForm();
+}
+function clearHolidayForm(){
+  mrHolidayEditId = null;
+  const id = document.getElementById("holidayEditId");
+  const s = document.getElementById("holidayStart");
+  const e = document.getElementById("holidayEnd");
+  if(id) id.value = "";
+  if(s) s.value = "";
+  if(e) e.value = "";
+}
+function syncHolidayEndWithStart(){
+  const s = document.getElementById("holidayStart");
+  const e = document.getElementById("holidayEnd");
+  if(!s || !e || !s.value) return;
+  if(!e.value || e.value < s.value) e.value = s.value;
+}
+function setupHolidayDateInputs(){
+  const s = document.getElementById("holidayStart");
+  const e = document.getElementById("holidayEnd");
+  if(!s || !e || s.dataset.mrHolidayDateSetup === "1") return;
+  s.dataset.mrHolidayDateSetup = "1";
+  s.addEventListener("change", syncHolidayEndWithStart);
+  s.addEventListener("input", syncHolidayEndWithStart);
+  e.addEventListener("focus", ()=>{ if(!e.value && s.value) e.value = s.value; });
+  e.addEventListener("click", ()=>{ if(!e.value && s.value) e.value = s.value; });
+}
+function renderHolidayList(){
+  const box = document.getElementById("holidayList");
+  if(!box) return;
+  const sorted = [...mrHolidayRanges].sort((a,b)=>(a.start||"").localeCompare(b.start||""));
+  if(!sorted.length){
+    box.innerHTML = '<div class="holidayEmpty">Noch keine Ferien gespeichert.</div>';
+    return;
+  }
+  box.innerHTML = sorted.map(h=>{
+    return `<div class="holidayItem">
+      <div class="holidayItemTitle">🌴 Ferien</div>
+      <div>${mrChDate(h.start)} – ${mrChDate(h.end)}</div>
+      <div class="holidayItemBtns">
+        <button type="button" class="holidayEdit" onclick="editHolidayRange('${h.id}')">Bearbeiten</button>
+        <button type="button" class="holidayDelete" onclick="deleteHolidayRange('${h.id}')">Löschen</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+async function saveHolidayRange(){
+  syncHolidayEndWithStart();
+  const start = mrIsoFromAnyDate(document.getElementById("holidayStart")?.value || "");
+  const end = mrIsoFromAnyDate(document.getElementById("holidayEnd")?.value || "");
+  const text = "Ferien";
+  if(!start || !end){ alert("Bitte Von und Bis auswählen."); return; }
+  if(end < start){ alert("Bis-Datum darf nicht vor Von-Datum liegen."); return; }
+  try{
+    if(typeof db === "undefined") throw new Error("Firebase nicht bereit");
+    const data = {start, end, text, updatedAt: firebase.firestore.FieldValue.serverTimestamp()};
+    if(mrHolidayEditId) await db.collection(MR_HOLIDAY_COLLECTION).doc(mrHolidayEditId).set(data,{merge:true});
+    else await db.collection(MR_HOLIDAY_COLLECTION).add({...data, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+    clearHolidayForm();
+  }catch(e){
+    console.error(e);
+    alert("Ferien konnten nicht gespeichert werden. Bitte Internet/Firebase prüfen.");
+  }
+}
+function editHolidayRange(id){
+  setupHolidayDateInputs();
+  const h = mrHolidayRanges.find(x=>x.id===id);
+  if(!h) return;
+  mrHolidayEditId = id;
+  document.getElementById("holidayEditId").value = id;
+  document.getElementById("holidayStart").value = h.start;
+  document.getElementById("holidayEnd").value = h.end;
+}
+async function deleteHolidayRange(id){
+  if(!confirm("Diese Ferien wirklich löschen?")) return;
+  try{
+    await db.collection(MR_HOLIDAY_COLLECTION).doc(id).delete();
+  }catch(e){
+    console.error(e);
+    alert("Ferien konnten nicht gelöscht werden.");
+  }
+}
+function startHolidaySync(){
+  if(mrHolidaySyncStarted || typeof db === "undefined") return;
+  mrHolidaySyncStarted = true;
+  db.collection(MR_HOLIDAY_COLLECTION).onSnapshot(snap=>{
+    mrHolidayRanges = [];
+    snap.forEach(doc=>{
+      const d = doc.data() || {};
+      const start = mrIsoFromAnyDate(d.start);
+      const end = mrIsoFromAnyDate(d.end);
+      if(start && end) mrHolidayRanges.push({id:doc.id,start,end,text:d.text || "Betriebsferien"});
+    });
+    renderHolidayList();
+    try{ renderCalendar(); }catch(_){ }
+  }, err=>console.warn("Ferien Sync Fehler:", err));
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  setTimeout(startHolidaySync, 500);
+});
+setTimeout(startHolidaySync, 1200);
+</script>
+
+
+
+<style>
+/* MR Beauty Ferien-Datepicker final */
+.holidayInput[readonly]{
+  cursor:pointer !important;
+  text-align:center !important;
+}
+.holidayInput::placeholder{
+  color:transparent !important;
+}
+.holidaySave,
+.holidayEdit,
+.holidayDelete{
+  height:38px !important;
+  min-height:38px !important;
+  border-radius:13px !important;
+  font-size:16px !important;
+}
+.holidayActions{
+  margin:34px 0 22px 0 !important;
+}
+.holidayPicker{
+  display:none;
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:calc(100% - 54px);
+  max-width:360px;
+  background:rgba(34,34,36,.96);
+  color:#fff;
+  z-index:140000;
+  border-radius:28px;
+  padding:22px 18px 18px;
+  box-shadow:0 18px 60px rgba(0,0,0,.75);
+  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(18px);
+  box-sizing:border-box;
+}
+.holidayPicker.show{display:block;}
+.holidayPickerHeader{
+  display:grid;
+  grid-template-columns:1fr 46px 46px;
+  align-items:center;
+  gap:8px;
+  margin-bottom:20px;
+}
+.holidayPickerTitle{
+  font-size:19px;
+  font-weight:700;
+  line-height:1;
+  color:#fff;
+}
+.holidayPickerNav{
+  width:46px !important;
+  height:38px !important;
+  padding:0 !important;
+  border-radius:15px !important;
+  background:transparent !important;
+  color:#4da3ff !important;
+  font-size:34px !important;
+  line-height:1 !important;
+}
+.holidayPickerWeekdays,
+.holidayPickerGrid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+}
+.holidayPickerWeekdays{
+  color:#aaa;
+  font-size:13px;
+  font-weight:700;
+  text-align:center;
+  margin-bottom:8px;
+}
+.holidayPickerDay{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:21px;
+  line-height:1;
+  color:#fff;
+  border-radius:19px;
+  position:relative;
+  overflow:hidden;
+}
+.holidayPickerDay.other{opacity:.28;}
+.holidayPickerDay.range{
+  background:rgba(77,163,255,.22);
+  border-radius:10px;
+}
+.holidayPickerDay.start,
+.holidayPickerDay.end,
+.holidayPickerDay.selected{
+  background:#4da3ff !important;
+  color:#fff !important;
+  border-radius:50% !important;
+}
+.holidayPickerActions{
+  display:grid;
+  grid-template-columns:1fr 58px;
+  gap:12px;
+  margin-top:20px;
+  align-items:center;
+}
+.holidayPickerReset{
+  width:auto !important;
+  height:44px !important;
+  border-radius:22px !important;
+  background:transparent !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color:#fff !important;
+  font-size:17px !important;
+  padding:0 18px !important;
+  justify-self:start;
+}
+.holidayPickerOk{
+  width:58px !important;
+  height:58px !important;
+  border-radius:50% !important;
+  background:#4da3ff !important;
+  color:#fff !important;
+  padding:0 !important;
+  font-size:34px !important;
+  line-height:1 !important;
+}
+</style>
+
+<script>
+/* MR Beauty Ferien: Bis bleibt leer, Picker öffnet im Von-Monat + Bereich hellblau */
+let mrHolidayPickerField = null;
+let mrHolidayPickerMonth = null;
+let mrHolidayPickerTemp = "";
+
+function mrHolidayEnsurePicker(){
+  let p = document.getElementById("holidayPicker");
+  if(p) return p;
+  p = document.createElement("div");
+  p.id = "holidayPicker";
+  p.className = "holidayPicker";
+  p.innerHTML = `
+    <div class="holidayPickerHeader">
+      <div id="holidayPickerTitle" class="holidayPickerTitle">Monat</div>
+      <button type="button" class="holidayPickerNav" onclick="mrHolidayPickerPrev()">‹</button>
+      <button type="button" class="holidayPickerNav" onclick="mrHolidayPickerNext()">›</button>
+    </div>
+    <div class="holidayPickerWeekdays"><div>MO</div><div>DI</div><div>MI</div><div>DO</div><div>FR</div><div>SA</div><div>SO</div></div>
+    <div id="holidayPickerGrid" class="holidayPickerGrid"></div>
+    <div class="holidayPickerActions">
+      <button type="button" class="holidayPickerReset" onclick="mrHolidayPickerReset()">Abbrechen</button>
+      <button type="button" class="holidayPickerOk" onclick="mrHolidayPickerClose()">✓</button>
+    </div>`;
+  document.body.appendChild(p);
+  return p;
+}
+function mrHolidayMonthName(y,m){
+  return ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"][m]+" "+y;
+}
+function mrHolidayAddDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function mrHolidayIsoDate(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function mrHolidayOpenPicker(field){
+  setupHolidayDateInputs();
+  mrHolidayPickerField = field;
+  const startIso = mrIsoFromAnyDate(document.getElementById("holidayStart")?.value || "");
+  const endIso = mrIsoFromAnyDate(document.getElementById("holidayEnd")?.value || "");
+  mrHolidayPickerTemp = mrIsoFromAnyDate(field.value || "") || (field.id === "holidayEnd" ? (endIso || startIso) : startIso) || mrHolidayIsoDate(new Date());
+  const baseIso = (field.id === "holidayEnd" && startIso && !mrIsoFromAnyDate(field.value || "")) ? startIso : mrHolidayPickerTemp;
+  const base = new Date(baseIso+"T12:00:00");
+  mrHolidayPickerMonth = new Date(base.getFullYear(), base.getMonth(), 1);
+  mrHolidayRenderPicker();
+  mrHolidayEnsurePicker().classList.add("show");
+}
+function mrHolidayRenderPicker(){
+  const p = mrHolidayEnsurePicker();
+  const title = document.getElementById("holidayPickerTitle");
+  const grid = document.getElementById("holidayPickerGrid");
+  if(!mrHolidayPickerMonth) mrHolidayPickerMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const y = mrHolidayPickerMonth.getFullYear();
+  const m = mrHolidayPickerMonth.getMonth();
+  if(title) title.textContent = mrHolidayMonthName(y,m);
+  const first = new Date(y,m,1);
+  const mondayIndex = (first.getDay()+6)%7;
+  const start = mrHolidayAddDays(first, -mondayIndex);
+  const startIso = mrIsoFromAnyDate(document.getElementById("holidayStart")?.value || "");
+  const endIso = mrIsoFromAnyDate(document.getElementById("holidayEnd")?.value || "");
+  const tempIso = mrHolidayPickerTemp;
+  let rangeStart = startIso;
+  let rangeEnd = endIso;
+  if(mrHolidayPickerField && mrHolidayPickerField.id === "holidayEnd" && startIso && tempIso){ rangeEnd = tempIso; }
+  if(rangeStart && rangeEnd && rangeEnd < rangeStart){ const t=rangeStart; rangeStart=rangeEnd; rangeEnd=t; }
+  let html = "";
+  for(let i=0;i<35;i++){
+    const d = mrHolidayAddDays(start,i);
+    const iso = mrHolidayIsoDate(d);
+    const cls = [];
+    if(d.getMonth() !== m) cls.push("other");
+    if(rangeStart && rangeEnd && iso > rangeStart && iso < rangeEnd) cls.push("range");
+    if(rangeStart && iso === rangeStart) cls.push("start");
+    if(rangeEnd && iso === rangeEnd && iso !== rangeStart) cls.push("end");
+    if(!rangeStart && tempIso && iso === tempIso) cls.push("selected");
+    html += `<div class="holidayPickerDay ${cls.join(" ")}" onclick="mrHolidayPickDate('${iso}')">${d.getDate()}</div>`;
+  }
+  grid.innerHTML = html;
+}
+function mrHolidayPickDate(iso){
+  mrHolidayPickerTemp = iso;
+  if(mrHolidayPickerField){
+    mrHolidayPickerField.value = mrChDate(iso);
+    if(mrHolidayPickerField.id === "holidayStart"){
+      const e = document.getElementById("holidayEnd");
+      if(e) e.value = "";
+    }
+  }
+  mrHolidayRenderPicker();
+}
+function mrHolidayPickerPrev(){ mrHolidayPickerMonth.setMonth(mrHolidayPickerMonth.getMonth()-1); mrHolidayRenderPicker(); }
+function mrHolidayPickerNext(){ mrHolidayPickerMonth.setMonth(mrHolidayPickerMonth.getMonth()+1); mrHolidayRenderPicker(); }
+function mrHolidayPickerReset(){
+  if(mrHolidayPickerField) mrHolidayPickerField.value = "";
+  mrHolidayPickerTemp = "";
+  mrHolidayRenderPicker();
+}
+function mrHolidayPickerClose(){
+  const p = document.getElementById("holidayPicker");
+  if(p) p.classList.remove("show");
+}
+
+setupHolidayDateInputs = function(){
+  const s = document.getElementById("holidayStart");
+  const e = document.getElementById("holidayEnd");
+  if(!s || !e || s.dataset.mrHolidayDateSetupFinal === "1") return;
+  s.dataset.mrHolidayDateSetupFinal = "1";
+  [s,e].forEach(inp=>{
+    inp.type = "text";
+    inp.readOnly = true;
+    inp.placeholder = "";
+    inp.setAttribute("inputmode","none");
+    inp.addEventListener("click", ev=>{ ev.preventDefault(); mrHolidayOpenPicker(inp); });
+    inp.addEventListener("focus", ev=>{ ev.preventDefault(); mrHolidayOpenPicker(inp); });
+  });
+};
+clearHolidayForm = function(){
+  mrHolidayEditId = null;
+  const id = document.getElementById("holidayEditId");
+  const s = document.getElementById("holidayStart");
+  const e = document.getElementById("holidayEnd");
+  if(id) id.value = "";
+  if(s) s.value = "";
+  if(e) e.value = "";
+  mrHolidayPickerClose();
+};
+editHolidayRange = function(id){
+  setupHolidayDateInputs();
+  const h = mrHolidayRanges.find(x=>x.id===id);
+  if(!h) return;
+  mrHolidayEditId = id;
+  document.getElementById("holidayEditId").value = id;
+  document.getElementById("holidayStart").value = mrChDate(h.start);
+  document.getElementById("holidayEnd").value = mrChDate(h.end);
+};
+saveHolidayRange = async function(){
+  const start = mrIsoFromAnyDate(document.getElementById("holidayStart")?.value || "");
+  const end = mrIsoFromAnyDate(document.getElementById("holidayEnd")?.value || "");
+  const text = "Ferien";
+  if(!start || !end){ alert("Bitte Von und Bis auswählen."); return; }
+  if(end < start){ alert("Bis-Datum darf nicht vor Von-Datum liegen."); return; }
+  try{
+    if(typeof db === "undefined") throw new Error("Firebase nicht bereit");
+    const data = {start, end, text, updatedAt: firebase.firestore.FieldValue.serverTimestamp()};
+    if(mrHolidayEditId) await db.collection(MR_HOLIDAY_COLLECTION).doc(mrHolidayEditId).set(data,{merge:true});
+    else await db.collection(MR_HOLIDAY_COLLECTION).add({...data, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+    clearHolidayForm();
+  }catch(e){
+    console.error(e);
+    alert("Ferien konnten nicht gespeichert werden. Bitte Internet/Firebase prüfen.");
+  }
+};
+document.addEventListener("DOMContentLoaded", ()=>setTimeout(setupHolidayDateInputs, 250));
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+/* MR Beauty: Uhrzeit-Roller FINAL 13 – mittig + flüssig */
+(function(){
+  const ITEM_H = 30;
+  const LOOPS = 13;
+  const MID_LOOP = Math.floor(LOOPS / 2);
+
+  let hourValue = '00';
+  let minuteValue = '00';
+
+  const rafIds = {};
+  const snapTimers = {};
+  const animIds = {};
+  const suppressScroll = {};
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function nowTime(){
+    const d = new Date();
+    return { h: pad(d.getHours()), m: pad(d.getMinutes()) };
+  }
+
+  function getCount(wheel){
+    return parseInt(wheel.dataset.count || '60', 10);
+  }
+
+  function buildWheel(id, max){
+    const wheel = document.getElementById(id);
+    if(!wheel || wheel.dataset.ready === '1') return;
+
+    wheel.innerHTML = '';
+
+    for(let loop=0; loop<LOOPS; loop++){
+      for(let i=0; i<=max; i++){
+        const item = document.createElement('div');
+        item.className = 'customTimeItem';
+        item.textContent = pad(i);
+        item.dataset.value = pad(i);
+        wheel.appendChild(item);
+      }
+    }
+
+    wheel.dataset.count = String(max + 1);
+
+    wheel.addEventListener('scroll', function(){
+      if(suppressScroll[id]) return;
+
+      cancelAnimationFrame(rafIds[id]);
+      rafIds[id] = requestAnimationFrame(function(){
+        paintWheel(wheel);
+      });
+
+      clearTimeout(snapTimers[id]);
+      snapTimers[id] = setTimeout(function(){
+        snapToMiddle(wheel);
+      }, 260);
+    }, {passive:true});
+
+    wheel.dataset.ready = '1';
+  }
+
+  function normalizeIfNeeded(wheel){
+    const count = getCount(wheel);
+    const rawIndex = Math.round(wheel.scrollTop / ITEM_H);
+    const total = count * LOOPS;
+    const valueIndex = ((rawIndex % count) + count) % count;
+
+    if(rawIndex < count * 2 || rawIndex > total - count * 2){
+      const newIndex = (MID_LOOP * count) + valueIndex;
+      suppressScroll[wheel.id] = true;
+      wheel.scrollTop = newIndex * ITEM_H;
+      requestAnimationFrame(function(){ suppressScroll[wheel.id] = false; });
+      return newIndex;
+    }
+
+    return rawIndex;
+  }
+
+  function paintWheel(wheel){
+    const floatIndex = wheel.scrollTop / ITEM_H;
+    const idx = Math.round(floatIndex);
+
+    const count = getCount(wheel);
+    const valueIndex = ((idx % count) + count) % count;
+    const val = pad(valueIndex);
+
+    const items = wheel.querySelectorAll('.customTimeItem');
+
+    items.forEach(function(item, i){
+      const dist = Math.abs(i - floatIndex);
+      const active = i === idx;
+
+      item.classList.toggle('active', active);
+      item.style.fontFamily = '"MontserratLocal","Montserrat",Arial,sans-serif';
+      item.style.fontVariantNumeric = 'normal';
+      item.style.fontFeatureSettings = "normal";
+      item.style.filter = 'none';
+
+      if(active){
+        item.style.color = '#fff';
+        item.style.webkitTextFillColor = '#fff';
+      }else{
+        item.style.color = 'rgba(255,255,255,.62)';
+        item.style.webkitTextFillColor = 'rgba(255,255,255,.62)';
+      }
+
+      if(dist < .45){
+        item.style.opacity = '1';
+        item.style.transform = 'scale(1)';
+      }else if(dist < 1.5){
+        item.style.opacity = '.62';
+        item.style.transform = 'scale(.94)';
+      }else if(dist < 2.5){
+        item.style.opacity = '.44';
+        item.style.transform = 'scale(.88)';
+      }else if(dist < 3.5){
+        item.style.opacity = '.27';
+        item.style.transform = 'scale(.82)';
+      }else if(dist < 4.5){
+        item.style.opacity = '.15';
+        item.style.transform = 'scale(.76)';
+      }else{
+        item.style.opacity = '.07';
+        item.style.transform = 'scale(.72)';
+      }
+    });
+
+    if(wheel.id === 'customHourWheel') hourValue = val;
+    if(wheel.id === 'customMinuteWheel') minuteValue = val;
+  }
+
+  function targetTopForValue(wheel, value){
+    const count = getCount(wheel);
+    const num = parseInt(value || '0', 10);
+    return ((MID_LOOP * count) + num) * ITEM_H;
+  }
+
+  function setWheelValue(wheel, value, smooth){
+    const top = targetTopForValue(wheel, value);
+
+    cancelAnimationFrame(animIds[wheel.id]);
+    clearTimeout(snapTimers[wheel.id]);
+
+    if(smooth){
+      animateTo(wheel, top, 720);
+    }else{
+      suppressScroll[wheel.id] = true;
+      wheel.scrollTop = top;
+      paintWheel(wheel);
+      requestAnimationFrame(function(){ suppressScroll[wheel.id] = false; });
+    }
+  }
+
+  function easeOutCubic(t){
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function animateTo(wheel, targetTop, duration){
+    const id = wheel.id;
+    cancelAnimationFrame(animIds[id]);
+    clearTimeout(snapTimers[id]);
+
+    const startTop = wheel.scrollTop;
+    const diff = targetTop - startTop;
+
+    if(Math.abs(diff) < 0.2){
+      wheel.scrollTop = targetTop;
+      paintWheel(wheel);
+      return;
+    }
+
+    const startTime = performance.now();
+    suppressScroll[id] = true;
+
+    function step(now){
+      const t = Math.min(1, (now - startTime) / duration);
+      const pos = startTop + diff * easeOutCubic(t);
+
+      wheel.scrollTop = pos;
+      paintWheel(wheel);
+
+      if(t < 1){
+        animIds[id] = requestAnimationFrame(step);
+      }else{
+        wheel.scrollTop = targetTop;
+        paintWheel(wheel);
+        requestAnimationFrame(function(){
+          suppressScroll[id] = false;
+          normalizeIfNeeded(wheel);
+          paintWheel(wheel);
+        });
+      }
+    }
+
+    animIds[id] = requestAnimationFrame(step);
+  }
+
+  function snapToMiddle(wheel){
+    const idx = Math.round(wheel.scrollTop / ITEM_H);
+    const targetTop = idx * ITEM_H;
+    const distance = Math.abs(targetTop - wheel.scrollTop);
+
+    if(distance < 0.2){
+      wheel.scrollTop = targetTop;
+      paintWheel(wheel);
+      return;
+    }
+
+    const duration = Math.min(360, Math.max(180, 160 + distance * 14));
+    animateTo(wheel, targetTop, duration);
+  }
+
+  function initWheels(){
+    buildWheel('customHourWheel', 23);
+    buildWheel('customMinuteWheel', 59);
+  }
+
+  function setFieldAndPreview(h, m){
+    const zeit = document.getElementById('zeit');
+    if(zeit) zeit.value = h + ':' + m;
+    if(typeof resetState === 'function') resetState();
+    if(typeof updatePreview === 'function') updatePreview();
+    if(typeof updateZeitText === 'function') updateZeitText();
+  }
+
+  window.openCustomTimePicker = function(){
+    initWheels();
+
+    const overlay = document.getElementById('customTimeOverlay');
+    const zeit = document.getElementById('zeit');
+    const hourWheel = document.getElementById('customHourWheel');
+    const minuteWheel = document.getElementById('customMinuteWheel');
+
+    const current = zeit && zeit.value ? zeit.value : '';
+
+    if(current.includes(':')){
+      const parts = current.split(':');
+      hourValue = parts[0];
+      minuteValue = parts[1];
+    }else{
+      const n = nowTime();
+      hourValue = n.h;
+      minuteValue = n.m;
+      if(zeit) zeit.value = hourValue + ':' + minuteValue;
+      if(typeof updatePreview === 'function') updatePreview();
+      if(typeof updateZeitText === 'function') updateZeitText();
+    }
+
+    overlay.style.display = 'flex';
+
+    setTimeout(function(){
+      setWheelValue(hourWheel, hourValue, false);
+      setWheelValue(minuteWheel, minuteValue, false);
+    }, 30);
+  };
+
+  window.customTimeConfirm = function(){
+    const hourWheel = document.getElementById('customHourWheel');
+    const minuteWheel = document.getElementById('customMinuteWheel');
+
+    snapToMiddle(hourWheel);
+    snapToMiddle(minuteWheel);
+    paintWheel(hourWheel);
+    paintWheel(minuteWheel);
+
+    setFieldAndPreview(hourValue, minuteValue);
+    document.getElementById('customTimeOverlay').style.display = 'none';
+  };
+
+  window.customTimeReset=function(){
+document.getElementById('customTimeOverlay').style.display='none';
+};
+
+  window.customTimeBackdrop=function(event){
+/* nur über Abbrechen oder Häkchen schliessen */
+};
+})();
+</script>
+
+
+<script>
+/* MR BEAUTY FINAL: Uhrzeit nur mit Häkchen übernehmen, Abbrechen stellt Original wieder her */
+(function(){
+  let mrOriginalTimeValue = "";
+
+  function restoreTimeValue(value){
+    const zeit = document.getElementById("zeit");
+    if(zeit) zeit.value = value || "";
+
+    if(typeof updateZeitText === "function") updateZeitText();
+    if(typeof updatePreview === "function") updatePreview();
+    if(typeof resetState === "function") resetState();
+  }
+
+  const oldOpen = window.openCustomTimePicker;
+  window.openCustomTimePicker = function(){
+    const zeit = document.getElementById("zeit");
+    mrOriginalTimeValue = zeit ? (zeit.value || "") : "";
+
+    if(typeof oldOpen === "function") oldOpen();
+
+    // Picker darf aktuelle Zeit anzeigen, aber Feld/Preview bleiben unverändert bis Häkchen.
+    setTimeout(function(){
+      restoreTimeValue(mrOriginalTimeValue);
+    }, 0);
+  };
+
+  const oldConfirm = window.customTimeConfirm;
+  window.customTimeConfirm = function(){
+    if(typeof oldConfirm === "function") oldConfirm();
+  };
+
+  window.customTimeReset = function(){
+    restoreTimeValue(mrOriginalTimeValue);
+    const overlay = document.getElementById("customTimeOverlay");
+    if(overlay) overlay.style.display = "none";
+  };
+
+  window.customTimeBackdrop = function(event){
+    // Zeitfenster nur über Abbrechen oder Häkchen schliessen.
+    return false;
+  };
+})();
+</script>
+
+
+<script>
+/* MR BEAUTY FINAL FONT RUNTIME: dynamische Elemente auch Montserrat */
+(function(){
+  function applyMontserrat(root){
+    try{
+      (root || document).querySelectorAll('*').forEach(function(el){
+        var cls = el.className || '';
+        var tag = (el.tagName || '').toLowerCase();
+        var isLogo =
+          (typeof cls === 'string' && (cls.indexOf('logo') !== -1 || cls.indexOf('Logo') !== -1 || cls.indexOf('sacramento') !== -1 || cls.indexOf('script') !== -1)) ||
+          tag === 'img';
+        if(!isLogo){
+          el.style.fontFamily = '"MontserratLocal", sans-serif';
+        }
+      });
+    }catch(e){}
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    applyMontserrat(document);
+  });
+
+  var mo = new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      m.addedNodes.forEach(function(n){
+        if(n.nodeType === 1) applyMontserrat(n);
+      });
+    });
+  });
+
+  if(document.documentElement){
+    mo.observe(document.documentElement,{childList:true,subtree:true});
+  }
+
+  var oldPaints = ['openCustomTimePicker','customTimeConfirm','customTimeReset'];
+  oldPaints.forEach(function(name){
+    var old = window[name];
+    if(typeof old === 'function'){
+      window[name] = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(function(){ applyMontserrat(document.getElementById('customTimeOverlay') || document); }, 0);
+        setTimeout(function(){ applyMontserrat(document.getElementById('customTimeOverlay') || document); }, 80);
+        return r;
+      };
+    }
+  });
+})();
+</script>
+
+
+<script>
+/* MR BEAUTY FINAL: Uhrzeit-Rad gleiche Montserrat-Ziffern wie Eingabefelder */
+(function(){
+  function fixTimeWheelFont(){
+    document.querySelectorAll('.customTimeItem, #customHourWheel .customTimeItem, #customMinuteWheel .customTimeItem').forEach(function(el){
+      el.style.fontFamily = '"MontserratLocal", sans-serif';
+      el.style.fontWeight = '400';
+      el.style.fontStyle = 'normal';
+      el.style.fontVariantNumeric = 'normal';
+      el.style.fontFeatureSettings = 'normal';
+      el.style.letterSpacing = '0';
+      el.style.webkitFontSmoothing = 'antialiased';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', fixTimeWheelFont);
+
+  ['openCustomTimePicker','customTimeConfirm','customTimeReset'].forEach(function(name){
+    var old = window[name];
+    if(typeof old === 'function'){
+      window[name] = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(fixTimeWheelFont, 0);
+        setTimeout(fixTimeWheelFont, 80);
+        setTimeout(fixTimeWheelFont, 200);
+        return r;
+      };
+    }
+  });
+
+  var mo = new MutationObserver(fixTimeWheelFont);
+  mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
+
+<script>
+/* MR BEAUTY FINAL: Uhrzeit-Zahlen 00-59 optisch gleich breit ausrichten */
+(function(){
+  function alignTimeDigits(){
+    document.querySelectorAll('#customHourWheel .customTimeItem, #customMinuteWheel .customTimeItem').forEach(function(el){
+      var raw = (el.textContent || '').trim();
+      if(/^\d{2}$/.test(raw) && !el.querySelector('.mrTimeDigit')){
+        el.innerHTML = '<span class="mrTimeDigit">' + raw.charAt(0) + '</span><span class="mrTimeDigit">' + raw.charAt(1) + '</span>';
+      }
+      el.style.fontFamily = '"MontserratLocal", sans-serif';
+      el.style.fontVariantNumeric = 'normal';
+      el.style.fontFeatureSettings = 'normal';
+      el.style.letterSpacing = '0';
+      el.style.textAlign = 'center';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', alignTimeDigits);
+
+  ['openCustomTimePicker','customTimeConfirm','customTimeReset'].forEach(function(name){
+    var old = window[name];
+    if(typeof old === 'function'){
+      window[name] = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(alignTimeDigits, 0);
+        setTimeout(alignTimeDigits, 80);
+        setTimeout(alignTimeDigits, 200);
+        return r;
+      };
+    }
+  });
+
+  var mo = new MutationObserver(function(){ alignTimeDigits(); });
+  if(document.documentElement){
+    mo.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const scrollers=[document.querySelector('.formContent'),document.querySelector('.content')];
+  scrollers.forEach(sc=>{
+    if(!sc) return;
+    sc.addEventListener('scroll',()=>{
+      const a=document.activeElement;
+      if(a && (a.matches('.field')||a.matches('.noteField'))){
+        a.blur();
+      }
+    },{passive:true});
+  });
+});
+</script>
+
+</body>
+</html>
